@@ -7,5 +7,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <errno.h>
 extern char **environ;
 #endif
