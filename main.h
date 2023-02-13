@@ -9,4 +9,5 @@
 #include <string.h>
 #include <errno.h>
 extern char **environ;
+#define BUFSIZE 1024
 #endif
