@@ -5,8 +5,13 @@ int main(int ac, char **argv)
 	char *command = NULL;
 	size_t len = 0;
 	ssize_t read;
-	(void) ac; (void) argv;
+	char *lineptr_copy = NULL, *lineptr = NULL;
+	const char *delim = "\n";
+	char *token;
+	int num_tokens = 0;
+	int i;
 
+	(void) ac; (void) argv;
 	while (1)
 	{
 		/* Display prompt*/
@@ -21,8 +26,40 @@ int main(int ac, char **argv)
 			break;
 		}
 	}
+	/* allocate space for a copy of the lineptr */
+
+	lineptr_copy = malloc(sizeof(char) * read);
+	if (lineptr_copy == NULL)
+	{
+		perror("simple_shell:" );
+		return (-1);
+	}
+	/*copy lineptr to lineptr_copy*/
+	strcpy(lineptr_copy, lineptr);
+	token = strtok(lineptr, delim);
+
+	while (token != NULL)
+	{
+		num_tokens++;
+		token = strtok(NULL, delim);
+	}
+	num_tokens++;
+
+	/*Allocate space to hold the array of strings */
+	argv = malloc(sizeof(char *) * num_tokens);
+	/*Store each token in argv array*/
+	token = strtok(lineptr_copy, delim);
+
+	for (i = 0; token != NULL; i++)
+	{
+		argv[i] = malloc(sizeof(char) * strlen(token));
+		strcpy(argv[i], token);
+		token = strtok(NULL, delim);
+	}
+	argv[i] = NULL;
+
+	printf("%s\n", lineptr);
 	/* Free memory allocated by getline */
 	free(command);
-	
 	return (0);
 }
