@@ -39,7 +39,7 @@ int main(void)
 		if (pid == 0)
 		{
 			/*In child process*/
-			char *argv[] = {command, NULL};
+			char *argv[] = {".", NULL};
 			execve(command, argv, environ);
 
 			/*If execve returns, itmeans the command was not found*/
