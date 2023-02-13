@@ -8,11 +8,12 @@
 int main(void)
 {
 	char *prompt = "#cisfun$ ";
-	char *command= NULL;
+	char *command = NULL;
+	char *argv[BUFSIZE];
 	size_t len = 0;
 	ssize_t read;
 	pid_t pid;
-	int status;
+	int status, i;
 	
 	while (1)
 	{
@@ -24,6 +25,14 @@ int main(void)
 			/*Handle end of file (Ctrl + D)*/
 			printf("\n");
 			break;
+		}
+		/*Split the command line into separate arguments */
+		argv[0] = strtok(command, " ");
+		for (i = 1; i < BUFSIZE; i++)
+		{
+			argv[i] = strtok(NULL, " ");
+			if (argv[i] == NULL)
+				break;
 		}
 		/* Create a child process to execute the command */
 		pid = fork();
