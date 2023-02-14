@@ -36,7 +36,7 @@ char *get_command(void)
 	if (read == -1)
 	{
 		printf("\n");
-		exit(1);
+		exit(-1);
 	}
 	return (command);
 }
@@ -48,38 +48,36 @@ char *get_command(void)
 void execute_command(char *command)
 {
 	char *argv[BUFSIZE];
-	char *token;
-	int i, status;
+	char *token, delim[] = " \t\r\n";
+	int status, count = 0, i = 0;
 	pid_t pid;
 
 	/* Split the command line into separate arguments*/
-	argv[0] = strtok(command, " ");
-	for (i = 1; i < BUFSIZE; i++)
+	token = strtok(command, delim);
+	while (token)
 	{
-		argv[i] = strtok(NULL, " ");
-		if (argv[i] == NULL)
-		{
-			break;
-		}
+		argv[i] = token;
+		count++;
+		i++;
+		token = strtok(NULL, delim);
 	}
+	argv[i] = NULL;
 	/* Create a child process to execute the command */
-	token = strtok(command, "\n");
 	pid = fork();
 	if (pid == 0)
 	{
-		char *argv[] = {"command", NULL};
-		/* In child process */
-		if (strcmp(command, "\n") == 0)
+		if ((strcmp(command, "\n") == 0))
 			exit(0);
-		execve(token, argv, environ);
+		/* In child process */
+		execve(argv[0], argv, environ);
 		/* If execve returns, it means the command was not found*/
-		perror("#cisfun");
+		perror("cisfun");
 		exit(0);
 	}
 	else if (pid < 0)
 	{
 		/*Handle fork error*/
-		perror("cisfun: error forking");
+		perror("cisfun");
 	}
 	else
 	{
