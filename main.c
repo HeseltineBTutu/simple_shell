@@ -41,10 +41,10 @@ int main(void)
 		{
 			char *argv[] = {"command", NULL};
 			/*In child process*/
+			if (strcmp(command, "\n") == 0)
+				exit(0);
 			execve(token, argv, environ);
 			/*Ignore new line character*/
-			if (strcmp(token, "\n") == 0)
-				continue;
 			/*If execve returns, itmeans the command was not found*/
 			perror("#cisfun");
 			exit(0);
