@@ -26,8 +26,7 @@ int main(void)
 			printf("\n");
 			exit(1);
 		}
-		/*Split the command line into separate arguments */
-		token = strtok(command, "\n");
+		/*Split the command line into separate arguments*/ 
 		argv[0] = strtok(command, " ");
 		for (i = 1; i < BUFSIZE; i++)
 		{
@@ -35,6 +34,8 @@ int main(void)
 			if (argv[i] == NULL)
 				break;
 		}
+		/*split the command after carriage return*/
+		token = strtok(command, "\n");
 		/* Create a child process to execute the command */
 		pid = fork();
 		if (pid == 0)
