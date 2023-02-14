@@ -48,7 +48,7 @@ char *get_command(void)
 void execute_command(char *command)
 {
 	char *argv[BUFSIZE];
-	char *token;/* = strtok(command, "\n");*/
+	char *token;
 	int i, status;
 	pid_t pid;
 
