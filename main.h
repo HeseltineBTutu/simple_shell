@@ -8,6 +8,8 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+char *get_command(void);
+void execute_command(char *command);
 extern char **environ;
 #define BUFSIZE 1024
 #endif
