@@ -48,14 +48,10 @@ char *get_command(void)
 void execute_command(char *command)
 {
 	char *argv[BUFSIZE];
-	char *token = strtok(command, "\n");
+	char *token;/* = strtok(command, "\n");*/
 	int i, status;
 	pid_t pid;
 
-	if (strcmp(command, "\n") == 0)
-	{
-		return;
-	}
 	/* Split the command line into separate arguments*/
 	argv[0] = strtok(command, " ");
 	for (i = 1; i < BUFSIZE; i++)
@@ -67,6 +63,7 @@ void execute_command(char *command)
 		}
 	}
 	/* Create a child process to execute the command */
+	token = strtok(command, "\n");
 	pid = fork();
 	if (pid == 0)
 	{
