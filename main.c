@@ -8,7 +8,7 @@
 int main(void)
 {
 	char *prompt = "#cisfun$ ";
-	char *command = NULL;
+	char *command = NULL, *token;
 	char *argv[BUFSIZE];
 	size_t len = 0;
 	ssize_t read;
@@ -24,9 +24,10 @@ int main(void)
 		{
 			/*Handle end of file (Ctrl + D)*/
 			printf("\n");
-			break;
+			exit(1);
 		}
 		/*Split the command line into separate arguments */
+		token = strtok(command, "\n");
 		argv[0] = strtok(command, " ");
 		for (i = 1; i < BUFSIZE; i++)
 		{
@@ -38,19 +39,20 @@ int main(void)
 		pid = fork();
 		if (pid == 0)
 		{
+			char *argv[] = {"command", NULL};
 			/*In child process*/
-			char *argv[] = {command, NULL};
-			execve(command, argv, environ);
-
+			execve(token, argv, environ);
+			/*Ignore new line character*/
+			if (strcmp(token, "\n") == 0)
+				continue;
 			/*If execve returns, itmeans the command was not found*/
 			perror("#cisfun");
-			exit(1);
+			exit(0);
 		}
 		else if (pid < 0)
 		{
 			/*Handle fork error*/
 			perror("#cisfun: error forking");
-			continue;
 		}
 		else
 		{
