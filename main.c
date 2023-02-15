@@ -1,5 +1,4 @@
 #include "main.h"
-
 /**
  * main - Starts the shell program
  *
@@ -12,12 +11,11 @@ int main(void)
 
 	while (1)
 	{
-		printf("%s", prompt);
+		write(STDOUT_FILENO, prompt, 9);
 		fflush(stdout);
 
 		command = get_command();
 		execute_command(command);
-
 		free(command);
 	}
 	return (0);
@@ -35,53 +33,61 @@ char *get_command(void)
 
 	if (read == -1)
 	{
-		printf("\n");
-		exit(-1);
+		if (feof(stdin))
+		{
+			printf("\n");
+			free(command);
+			exit(0);
+		}
+		else
+		{
+			perror("");
+			exit(1);
+		}
 	}
 	return (command);
 }
-
 /**
  * execute_command - Execute a command in a childe process.
  * @command: Pointer to the command string.
  */
 void execute_command(char *command)
 {
-	char *argv[BUFSIZE];
+	char *av[BUFSIZE];
 	char *token, delim[] = " \t\r\n";
-	int status, count = 0, i = 0;
+	int status, i = 0;
 	pid_t pid;
 
 	/* Split the command line into separate arguments*/
 	token = strtok(command, delim);
 	while (token)
 	{
-		argv[i] = token;
-		count++;
+		av[i] = token;
 		i++;
 		token = strtok(NULL, delim);
 	}
-	argv[i] = NULL;
+	av[i] = NULL;
 	/* Create a child process to execute the command */
 	pid = fork();
 	if (pid == 0)
 	{
-		if ((strcmp(command, "\n") == 0))
-			exit(0);
+		if (av[0] == NULL)
+			exit(1);
 		/* In child process */
-		execve(argv[0], argv, environ);
+		execve(av[0], av, environ);
 		/* If execve returns, it means the command was not found*/
-		perror("cisfun");
-		exit(0);
+		perror(av[0]);
+		exit(1);
 	}
 	else if (pid < 0)
 	{
 		/*Handle fork error*/
-		perror("cisfun");
+		perror("");
 	}
 	else
 	{
 		/* In parent process, wait for child to finish */
 		waitpid(pid, &status, 0);
 	}
+	free(token);
 }
