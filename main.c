@@ -72,7 +72,10 @@ void execute_command(char *command)
 	if (pid == 0)
 	{
 		if (av[0] == NULL)
+		{
+			free(command);
 			exit(1);
+		}
 		/* In child process */
 		execve(av[0], av, environ);
 		/* If execve returns, it means the command was not found*/
