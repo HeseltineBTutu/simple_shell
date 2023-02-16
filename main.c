@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 /**
  * get_command - Reads a command from stdin.
  *
- * Return: POinter to the command string.
+ * Return: Pointer to the command string.
  */
 char *get_command(void)
 {
@@ -75,15 +75,16 @@ void execute_command(char *command)
 	pid = fork();
 	if (pid == 0)
 	{
+		/* In child process */
 		if (av[0] == NULL)
 		{
 			free(command);
 			exit(0);
 		}
-		/* In child process */
 		execve(av[0], av, environ);
-		perror(arr[0]);
 		/* If execve returns, it means the command was not found*/
+		perror(arr[0]);
+		exit(1);
 	}
 	else if (pid < 0)
 	{
