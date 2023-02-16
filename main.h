@@ -10,8 +10,8 @@
 #include <errno.h>
 #include <dirent.h>
 char *get_command(void);
-char *_which(char *cmd);
 void execute_command(char *command);
 extern char **environ;
+char **arr;
 #define BUFSIZE 1024
 #endif

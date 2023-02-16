@@ -1,14 +1,18 @@
 #include "main.h"
 /**
  * main - Starts the shell program
- *
+ * @argc: argument count
+ * @argv: argument vector
  * Return: 0 on success.
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *prompt = "#cisfun$ ";
 	char *command;
 
+	(void)argc;
+	/*assign argv to global variable arr for error handling*/
+	arr = argv;
 	while (1)
 	{
 		write(STDOUT_FILENO, prompt, 9);
@@ -41,7 +45,7 @@ char *get_command(void)
 		}
 		else
 		{
-			perror("");
+			perror(arr[0]);
 			exit(1);
 		}
 	}
@@ -74,23 +78,21 @@ void execute_command(char *command)
 		if (av[0] == NULL)
 		{
 			free(command);
-			exit(1);
+			exit(0);
 		}
 		/* In child process */
 		execve(av[0], av, environ);
+		perror(arr[0]);
 		/* If execve returns, it means the command was not found*/
-		perror(av[0]);
-		exit(1);
 	}
 	else if (pid < 0)
 	{
 		/*Handle fork error*/
-		perror("");
+		perror(arr[0]);
 	}
 	else
 	{
 		/* In parent process, wait for child to finish */
 		waitpid(pid, &status, 0);
 	}
-	free(token);
 }
