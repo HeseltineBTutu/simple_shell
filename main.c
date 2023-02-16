@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
 	char *prompt = "#cisfun$ ";
-	char *command;
+	char *command, **av;
 
 	(void)argc;
 	/*assign argv to global variable arr for error handling*/
@@ -19,8 +19,10 @@ int main(int argc, char **argv)
 		fflush(stdout);
 
 		command = get_command();
-		execute_command(command);
+		av = getargs(command);
+		execute_command(av);
 		free(command);
+		free(av);
 	}
 	return (0);
 }
@@ -52,48 +54,72 @@ char *get_command(void)
 	return (command);
 }
 /**
- * execute_command - Execute a command in a childe process.
- * @command: Pointer to the command string.
+ * getargs - gets arguments
+ * @command: passed command
+ * Return: array of strings
  */
-void execute_command(char *command)
+char **getargs(char *command)
 {
-	char *av[BUFSIZE];
+	char **arguments = malloc(sizeof(char *) * 100);
 	char *token, delim[] = " \t\r\n";
-	int status, i = 0;
-	pid_t pid;
+	int i = 0;
 
 	/* Split the command line into separate arguments*/
 	token = strtok(command, delim);
 	while (token)
 	{
-		av[i] = token;
+		arguments[i] = token;
 		i++;
 		token = strtok(NULL, delim);
 	}
-	av[i] = NULL;
+	arguments[i] = NULL;
+	return (arguments);
+}
+/**
+ * execute_command - Execute a command in a childe process.
+ * @args: array of command strings.
+ * Return: 0 on success
+ */
+int execute_command(char **args)
+{
+	int status, w;
+	pid_t pid;
+
+	if (args[0] == NULL)
+	{
+		return (1);
+	}
+	if ((strcmp(args[0], "exit") == 0))
+	{
+		free(args[0]);
+		free(args);
+		exit(0);
+	}
 	/* Create a child process to execute the command */
 	pid = fork();
 	if (pid == 0)
 	{
 		/* In child process */
-		if (av[0] == NULL)
+		if ((execve(args[0], args, environ) == -1))
 		{
-			free(command);
-			exit(0);
+			perror(arr[0]);
+			exit(1);
 		}
-		execve(av[0], av, environ);
-		/* If execve returns, it means the command was not found*/
-		perror(arr[0]);
-		exit(1);
 	}
 	else if (pid < 0)
 	{
-		/*Handle fork error*/
 		perror(arr[0]);
+		exit(1);
 	}
 	else
 	{
 		/* In parent process, wait for child to finish */
-		waitpid(pid, &status, 0);
+		w = waitpid(pid, &status, 0);
+		if (w == -1)
+		{
+			perror(arr[0]);
+			exit(1);
+		}
 	}
+	return (1);
 }

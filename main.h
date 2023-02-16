@@ -9,8 +9,10 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
+#include <signal.h>
 char *get_command(void);
-void execute_command(char *command);
+char **getargs(char *command);
+int execute_command(char **args);
 extern char **environ;
 char **arr;
 #define BUFSIZE 1024
