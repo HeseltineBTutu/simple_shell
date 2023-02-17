@@ -12,6 +12,7 @@
 #include <signal.h>
 char *get_command(void);
 char **getargs(char *command);
+char *search(char *command);
 int execute_command(char **args);
 extern char **environ;
 char **arr;
