@@ -4,22 +4,21 @@ Simple UNIX implementation written for ALX Software Engineering.
 The Simple Shell is a command-line interpreter or shell that provides an both interactive and noninteractive command 
 line user interface for Unix-like operating systems.
 ### Case Implementation
-## Non-interactive
+### Non-interactive
 `>$ echo bin/ls | ./hsh`
 
 `>AUTHORS README.md main.c`
+###Interactive
 
-##Interactive
+`>$ ./hsh`
 
-`$ ./hsh`
+`>(cisifun$) /bin/ls`
 
-`(cisifun$) /bin/ls`
-
-`AUTHORS README.md main.c`
+`>AUTHORS README.md main.c`
 
 `>(cisifun$) exit`
 
-`$`
+`>$`
 
 ### Authors
 Nataly-Aketch<nataliebeckie@gmail.com>
