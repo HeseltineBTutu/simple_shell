@@ -12,9 +12,9 @@
 #include <signal.h>
 char *get_command(void);
 char **getargs(char *command);
-char *search(char *command);
 int execute_command(char **args);
 extern char **environ;
+int find(char *command, DIR *dir);
+char *search(char *command);
 char **arr;
-#define BUFSIZE 1024
 #endif

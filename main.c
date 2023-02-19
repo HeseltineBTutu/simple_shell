@@ -15,8 +15,8 @@ int main(int argc, char **argv)
 	arr = argv;
 	while (1)
 	{
-		write(STDOUT_FILENO, prompt, 9);
-		fflush(stdout);
+		if (isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, prompt, 9);
 
 		command = get_command();
 		av = getargs(command);
@@ -28,7 +28,6 @@ int main(int argc, char **argv)
 }
 /**
  * get_command - Reads a command from stdin.
- *
  * Return: Pointer to the command string.
  */
 char *get_command(void)
@@ -41,15 +40,13 @@ char *get_command(void)
 	{
 		if (feof(stdin))
 		{
-			printf("\n");
 			free(command);
 			exit(0);
 		}
 		else
 		{
 			perror(arr[0]);
-			exit(1);
-		}
+			exit(1);													}
 	}
 	return (command);
 }
@@ -60,11 +57,12 @@ char *get_command(void)
  */
 char **getargs(char *command)
 {
-	char **arguments = malloc(sizeof(char *) * 100);
+	char **arguments = malloc(sizeof(char *) * strlen(command));
 	char *token, delim[] = " \t\r\n";
 	int i = 0;
 
-	/* Split the command line into separate arguments*/
+	if (!arguments)
+		exit(1);
 	token = strtok(command, delim);
 	while (token)
 	{
@@ -78,29 +76,23 @@ char **getargs(char *command)
 /**
  * execute_command - Execute a command in a childe process.
  * @args: array of command strings.
- * Return: 0 on success
+ * Return: 0 on success, -1 on failure
  */
 int execute_command(char **args)
 {
 	int status, w;
 	pid_t pid;
+	char *cmd;
 
 	if (args[0] == NULL)
 	{
-		return (1);
+		return (-1);
 	}
-	if ((strcmp(args[0], "exit") == 0))
-	{
-		free(args[0]);
-		free(args);
-		exit(0);
-	}
-	/* Create a child process to execute the command */
 	pid = fork();
 	if (pid == 0)
 	{
-		/* In child process */
-		if ((execve(args[0], args, environ) == -1))
+		cmd = search(args[0]);
+		if ((execve(cmd, args, environ) == -1))
 		{
 			perror(arr[0]);
 			exit(1);
@@ -109,7 +101,7 @@ int execute_command(char **args)
 	else if (pid < 0)
 	{
 		perror(arr[0]);
-		exit(1);
+		return (-1);
 	}
 	else
 	{
@@ -118,8 +110,8 @@ int execute_command(char **args)
 		if (w == -1)
 		{
 			perror(arr[0]);
-			exit(1);
-		}
+			return (-1);
+																	}
 	}
-	return (1);
+	return (0);
 }
