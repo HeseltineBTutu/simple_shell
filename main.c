@@ -83,6 +83,12 @@ int execute(char **av)
 		built_in_exit();
 		return (0);
 	}
+	/* check if first argument is "env"*/
+	if (strcmp(av[0], "env") == 0)
+	{
+		built_in_env();
+		return (0);
+	}
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{

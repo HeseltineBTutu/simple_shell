@@ -15,6 +15,7 @@ int execute(char **args);
 char *get_path(void);
 char *find_command(char *command);
 int built_in_exit(void);
+int built_in_env(void);
 extern char **environ;
 char **arr;
 #endif
