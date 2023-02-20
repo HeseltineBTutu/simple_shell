@@ -13,7 +13,7 @@
 char **getargs(char *command);
 int execute(char **args);
 char *get_path(void);
-char *find_command(char *command, char *path);
+char *find_command(char *command);
 extern char **environ;
 char **arr;
 #endif
