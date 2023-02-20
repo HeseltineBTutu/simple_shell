@@ -80,7 +80,7 @@ int execute(char **av)
 	/* check if first arguemnt is "exit" */
 	if (strcmp(av[0], "exit") == 0)
 	{
-		exit_shell();
+		built_in_exit();
 		return (0);
 	}
 	fullpath = find_command(av[0]);

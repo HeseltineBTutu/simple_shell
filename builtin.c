@@ -1,11 +1,11 @@
 #include "main.h"
 
 /**
- * exit_shell - exit shell
+ * built_in_exit - exit shell
  *
  * Return: Always returns 0, to proceed with execution.
  */
-int exit_shell()
+int built_in_exit(void)
 {
 	exit(EXIT_SUCCESS);
 }
