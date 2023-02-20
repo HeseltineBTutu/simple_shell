@@ -10,11 +10,8 @@
 #include <errno.h>
 #include <dirent.h>
 #include <signal.h>
-char *get_command(void);
 char **getargs(char *command);
-int execute_command(char **args);
+int execute(char **args);
 extern char **environ;
-int find(char *command, DIR *dir);
-char *search(char *command);
 char **arr;
 #endif
