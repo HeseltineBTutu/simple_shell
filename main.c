@@ -17,24 +17,12 @@ int main(int argc, char **argv)
 	arr = argv;
 	while (1)
 	{
-		if ((isatty(STDIN_FILENO)))
-			write(STDOUT_FILENO, prompt, 9);
-		read = getline(&command, &len, stdin);
-		if (read == -1)
-		{
-			if (feof(stdin))
-			{
-				free(command);
-				return (0);
-			}
-			else
-				return (1);
-		}
-		args = getargs(command);
-		execute(args);
-		free(args);
-	}
+		printf("%s", prompt);
+		if (getline(&command, &len, stdin) == -1) break;
+		execute(getargs(command));
+		free(command);
 	return (0);
+	}
 }
 /**
  * getargs - tokenizes command into arguments
@@ -69,23 +57,31 @@ int execute(char **av)
 {
 	pid_t pid;
 	int status, w;
+	char *path, *fullpath;
 
 	if (av[0] == NULL)
 	{
 		free(av[0]);
 		return (-1);
 	}
+	path = get_path();
+	fullpath = find_command(av[0], path);
+	if (fullpath == NULL)
+	{
+		fprintf(stderr, "%s: command not found\n", av[0]);
+		return (-1);
+	}
 	pid = fork();
 	if (pid < 0)
 	{
-		perror(arr[0]);
+		perror(av[0]);
 		return (-1);
 	}
 	if (pid == 0)
 	{
 		if ((execve(av[0], av, NULL) == -1))
 		{
-			perror(arr[0]);
+			perror(av[0]);
 			return (-1);
 		}
 	}
@@ -94,7 +90,7 @@ int execute(char **av)
 		w = wait(&status);
 		if (w == -1)
 		{
-			perror(arr[0]);
+			perror(av[0]);
 			return (-1);
 		}
 	}
