@@ -77,6 +77,12 @@ int execute(char **av)
 		free(av[0]);
 		return (-1);
 	}
+	/* check if first arguemnt is "exit" */
+	if (strcmp(av[0], "exit") == 0)
+	{
+		exit_shell();
+		return (0);
+	}
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
