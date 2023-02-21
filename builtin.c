@@ -1,45 +1,38 @@
 #include "main.h"
-
 /**
  * built_in_exit - exit shell
- *
+ * @cmd: array of string
  * Return: Always returns 0, to proceed with execution.
  */
-int built_in_exit(void)
+void built_in_exit(char **cmd)
 {
-	 _exit(0);
+	int status;
+
+	if ((strcmp("exit", cmd[0]) == 0))
+	{
+		if (cmd[1])
+			status = atoi(cmd[1]);
+		free(cmd[0]);
+		free(cmd);
+		exit(status);
+	}
 }
 
 /**
  * built_in_env - print the current environment
- *
+ * @cmd: executable
  * Return: Always returns 0, to proceed with execution.
  */
-int built_in_env(void)
+void built_in_env(char *cmd)
 {
 	char **env = environ;
 
-	while (*env)
+	if ((strcmp("env", cmd) == 0))
 	{
-		printf("%s\n", *env);
-		env++;
-	}
-	return (0);
-}
-/**
- * execute_built_in - executes env and exit
- * @command: array of strings
- */
-void execute_built_in(char **command)
-{
-	if (strcmp(command[0], "exit") == 0)
-	{
-		free(command[0]);
-		free(command);
-		built_in_exit();
-	}
-	if (strncmp(command[0], "env", 3) == 0)
-	{
-		built_in_env();
+		while (*env)
+		{
+			printf("%s\n", *env);
+			env++;
+		}
 	}
 }
