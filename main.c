@@ -93,7 +93,7 @@ int execute(char **av)
 	}
 	if (pid == 0)
 	{
-		execve(fullpath, av, NULL);
+		execve(fullpath, av, environ);
 		perror(arr[0]);
 		return (-1);
 	}
