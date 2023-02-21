@@ -74,49 +74,38 @@ int execute(char **av)
 
 	if (av[0] == NULL)
 	{
-		free(av[0]);
+		free(av);
 		return (-1);
 	}
-	/* check if first arguemnt is "exit" */
-	if (strcmp(av[0], "exit") == 0)
-	{
-		built_in_exit();
-		return (0);
-	}
-	/* check if first argument is "env"*/
-	if (strcmp(av[0], "env") == 0)
-	{
-		built_in_env();
-		return (0);
-	}
+	execute_built_in(av);
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
-		fprintf(stderr, "%s: command not found\n", av[0]);
+		fprintf(stderr, "%s: command not found\n", arr[0]);
+		free(av);
 		return (-1);
 	}
 	pid = fork();
 	if (pid < 0)
 	{
-		perror(av[0]);
+		perror(arr[0]);
 		return (-1);
 	}
 	if (pid == 0)
 	{
-		if ((execve(fullpath, av, NULL) == -1))
-		{
-			perror(av[0]);
-			return (-1);
-		}
+		execve(fullpath, av, NULL);
+		perror(arr[0]);
+		return (-1);
 	}
 	else
 	{
 		w = wait(&status);
 		if (w == -1)
 		{
-			perror(av[0]);
+			perror(arr[0]);
 			return (-1);
 		}
 	}
+	free(av);
 	return (0);
 }
