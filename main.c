@@ -1,5 +1,14 @@
 #include "main.h"
 /**
+ * sighan - block control c signal
+ * @signum: action for signal
+ */
+void sighan(int signum)
+{
+	(void) signum;
+	write(STDOUT_FILENO, "\n#cisfun$ ", 10);
+}
+/**
  * main - entry point
  * @argc: argument count
  * @argv: argument vector
@@ -15,6 +24,7 @@ int main(int argc, char **argv)
 
 	(void) argc;
 	arr = argv;
+	signal(SIGINT, sighan);
 	while (1)
 	{
 		/*check if stdin is open to determine interactive or non interactive mode*/
