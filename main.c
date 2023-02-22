@@ -102,13 +102,15 @@ int execute(char **av)
 	if (pid < 0)
 	{
 		perror(arr[0]);
+		free(av);
 		return (-1);
 	}
 	if (pid == 0)
 	{
 		execve(fullpath, av, environ);
 		perror(arr[0]);
-		return (-1);
+		free(av);
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
@@ -116,6 +118,22 @@ int execute(char **av)
 		if (w == -1)
 		{
 			perror(arr[0]);
+			free(av);
+			return (-1);
+		}
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) != 0)
+			{
+				fprintf(stderr, "%s: command with status %d\n", arr[0], WEXITSTATUS(status));
+				free(av);
+				return (-1);
+			}
+		}
+		else if (WIFSIGNALED(status))
+		{
+			fprintf(stderr, "%s: command terminated by signal %d\n", arr[0], WTERMSIG(status));
+			free(av);
 			return (-1);
 		}
 	}
