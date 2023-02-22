@@ -5,12 +5,16 @@
  */
 void built_in_exit(char **cmd)
 {
-	int status;
+	long int status;
 
 	if (strcmp("exit", cmd[0]) == 0)
 	{
 		if (cmd[1])
-			status = atoi(cmd[1]);
+		{
+			status = strtol(cmd[1], NULL, 10);
+			if (status <= 0)
+				dprintf(STDERR_FILENO, "%s: exit: Illegal number: %s\n", arr[0], cmd[1]);
+		}
 		free(cmd[0]);
 		free(cmd);
 		exit(status);
