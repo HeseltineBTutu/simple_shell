@@ -3,9 +3,8 @@
  * sighan - block control c signal
  * @signum: action for signal
  */
-void sighan(int signum)
+void sighan(__attribute__((unused)) int signum)
 {
-	(void) signum;
 	write(STDOUT_FILENO, "\n#cisfun$ ", 10);
 }
 /**
@@ -30,7 +29,7 @@ int main(int argc, char **argv)
 		/*check if stdin is open to determine interactive or non interactive mode*/
 		if ((isatty(STDIN_FILENO)))
 			printf("%s", prompt);
-		read = get_line(&command, &len, stdin);
+		read = getline(&command, &len, stdin);
 		if (read == -1)
 		{
 			/*check if getline failed because of end of file or due to error*/
@@ -54,10 +53,10 @@ int main(int argc, char **argv)
  */
 char **getargs(char *command)
 {
-	int i = 0;
+	int i = 0, size = 10;
 	char delim[] = " \t\r\n";
 	char *token;
-	char **av = malloc(sizeof(char *) * 100);
+	char **av = malloc(sizeof(char *) * size);
 
 	if (av == NULL)
 		return (0);
@@ -66,6 +65,13 @@ char **getargs(char *command)
 	{
 		av[i] = token;
 		i++;
+		if (i == size - 1)
+		{
+			size *= 2;
+			av = realloc(av, sizeof(char *) * size);
+			if (av == NULL)
+				return (NULL);
+		}
 		token = strtok(NULL, delim);
 	}
 	av[i] = NULL;
@@ -105,7 +111,7 @@ int execute(char **av)
 	{
 		execve(fullpath, av, environ);
 		perror(arr[0]);
-		return (-1);
+		_exit(EXIT_FAILURE);
 	}
 	else
 	{

@@ -8,10 +8,15 @@ void built_in_exit(char **cmd)
 {
 	int status;
 
+	if (cmd == NULL || cmd[0] == NULL)
+		return;
+
 	if ((strcmp("exit", cmd[0]) == 0))
 	{
+		status = EXIT_SUCCESS;
+
 		if (cmd[1])
-			status = atoi(cmd[1]);
+			status = (int)strtol(cmd[1], NULL, 10);
 		free(cmd[0]);
 		free(cmd);
 		exit(status);
