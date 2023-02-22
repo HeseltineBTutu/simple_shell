@@ -26,14 +26,17 @@ int built_in_exit(char **av)
  *
  * Return: Always returns 0, to proceed with execution.
  */
-int built_in_env(void)
+int built_in_env(char *cmd)
 {
 	char **env = environ;
 
-	while (*env)
+	if ((strcmp("env", cmd) == 0))
 	{
-		printf("%s\n", *env);
-		env++;
+		while (*env)
+		{
+			printf("%s\n", *env);
+			env++;
+		}
 	}
 	return (0);
 }
