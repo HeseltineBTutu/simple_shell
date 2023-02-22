@@ -1,109 +1,92 @@
 #include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
+#define BUF_SIZE 1024
 /**
- * allocate_buffer - allocate memory for the buffer
- * @size: size of the buffer
+ * _getline - reads an entire line froma file descriptor
+ * @lineptr: pointer to a buffer for storing the line
+ * @n: pointer to the size of the buffer
+ * @stream: pointer to the input stream
  *
- * Return: pointer to allocated buffer, or NULL on failure
+ * Return: the number of bytes read, or -1 on error or end of file
  */
-char *allocate_buffer(size_t size)
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 {
-	char *buffer = malloc(size);
+    static char buf[BUF_SIZE];
+    static size_t buf_pos = 0;
+    static ssize_t buf_size = 0;
+    int i, eof = 0;
+    ssize_t count = 0;
+    int nl_pos = -1;
+    char *new_lineptr;
 
-	if (!buffer)
-		return (NULL);
-	return (buffer);
+    if (lineptr == NULL || n == NULL || stream == NULL) {
+        return -1;
+    }
+
+    if (*lineptr == NULL || *n == 0) {
+        *n = BUF_SIZE;
+        *lineptr = malloc(*n);
+        if (*lineptr == NULL) {
+            return -1;
+        }
+    }
+
+    while (!eof) {
+        /*Check if there's a newline in the buffer*/
+        for (i = buf_pos; i < buf_size; i++) {
+            if (buf[i] == '\n') {
+                nl_pos = i;
+                break;
+            }
+        }
+
+        if (nl_pos != -1) {
+            /*Copy characters up to newline into lineptr*/
+            if (count + nl_pos - buf_pos + 1 > *n) {
+                /*Allocate a larger buffer if necessary*/
+                *n = count + nl_pos - buf_pos + 1;
+                new_lineptr = realloc(*lineptr, *n);
+                if (new_lineptr == NULL) {
+                    return -1;
+                }
+                *lineptr = new_lineptr;
+            }
+            memcpy(*lineptr + count, buf + buf_pos, nl_pos - buf_pos + 1);
+            count += nl_pos - buf_pos + 1;
+            buf_pos = nl_pos + 1;
+            break;
+        } else {
+            /* Copy all remaining characters into lineptr*/
+            if (count + buf_size - buf_pos > *n) {
+                /*Allocate a larger buffer if necessary*/
+                *n = count + buf_size - buf_pos;
+                new_lineptr = realloc(*lineptr, *n);
+                if (new_lineptr == NULL) {
+                    return -1;
+                }
+                *lineptr = new_lineptr;
+            }
+            memcpy(*lineptr + count, buf + buf_pos, buf_size - buf_pos);
+            count += buf_size - buf_pos;
+            buf_pos = 0;
+        }
+
+        /*Fill buffer with more data*/
+        buf_size = read(fileno(stream), buf, BUF_SIZE);
+        if (buf_size <= 0) {
+            eof = 1;
+            break;
+        }
+    }
+
+    if (count == 0 && eof) {
+        /*Nothing was read and EOF was encountered*/
+        return -1;
+    }
+
+    (*lineptr)[count] = '\0';
+    return count;
 }
-
-/**
- * read_char - read a character from the input stream
- * @stream: input stream to read from
- * @c: pointer to variable to store the read character
- *
- * Return: 1 if a character was read successfully, 0 otherwise
- */
-int read_char(FILE *stream, char *c)
-{
-	int n;
-	static int end_of_file;
-
-	if (end_of_file)
-		return (0);
-	n = fread(c, 1, 1, stream);
-	if (n == 0 && !feof(stream))
-	{
-		end_of_file = 1;
-		return (0);
-	}
-	return (1);
-}
-
-/**
- * append_char - append a character to the buffer
- * @buffer: buffer to append to
- * @size: size of the buffer
- * @pos: current position in the buffer
- * @c: character to append
- *
- * Return: 1 on success, 0 on failure
- */
-int append_char(char **buffer, size_t *size, size_t pos, char c)
-{
-	if (pos >= *size)
-	{
-		size_t new_size = *size * 2;
-		char *new_buffer = allocate_buffer(new_size);
-
-		if (!new_buffer)
-			return (0);
-		strncpy(new_buffer, *buffer, pos);
-		free(*buffer);
-		*buffer = new_buffer;
-		*size = new_size;
-	}
-	(*buffer)[pos] = c;
-	return (1);
-}
-
-/**
- * get_line - read a line of input from a stream
- * @lineptr: pointer to a buffer to store the input
- * @n: size of the buffer
- * @stream: input stream to read from
- *
- * Return: number of characters read, or -1 on failure
- */
-ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
-{
-	static char *buffer;
-	static size_t buffer_size;
-	size_t pos = 0;
-	char c;
-
-	if (!buffer)
-	{
-		buffer_size = BUFSIZE;
-		buffer = allocate_buffer(buffer_size);
-		if (!buffer)
-			return (-1);
-	}
-	while (read_char(stream, &c))
-	{
-		if (c == '\n')
-			break;
-		if (!append_char(&buffer, &buffer_size, pos, c))
-			return (-1);
-		pos++;
-	}
-	if (!append_char(&buffer, &buffer_size, pos, '\0'))
-		return (-1);
-	if (*lineptr)
-		free(*lineptr);
-	*lineptr = buffer;
-	if (*n < buffer_size)
-		*n = buffer_size;
-	buffer = NULL;
-	buffer_size = 0;
-	return (pos);
-}
-
