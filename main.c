@@ -53,10 +53,10 @@ int main(int argc, char **argv)
  */
 char **getargs(char *command)
 {
-	int i = 0, size = 10;
+	int i = 0;
 	char delim[] = " \t\r\n";
 	char *token;
-	char **av = malloc(sizeof(char *) * size);
+	char **av = malloc(sizeof(char *) * 100);
 
 	if (av == NULL)
 		return (0);
@@ -65,13 +65,6 @@ char **getargs(char *command)
 	{
 		av[i] = token;
 		i++;
-		if (i == size - 1)
-		{
-			size *= 2;
-			av = realloc(av, sizeof(char *) * size);
-			if (av == NULL)
-				return (NULL);
-		}
 		token = strtok(NULL, delim);
 	}
 	av[i] = NULL;
@@ -93,7 +86,7 @@ int execute(char **av)
 		free(av);
 		return (-1);
 	}
-	execute_built_in(av);
+	built_in_exit(av);
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
