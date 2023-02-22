@@ -18,6 +18,7 @@ int built_in_exit(char **av)
 			fprintf(stderr, "%s: exit: %d: Illegal number: %s\n", arr[0], 1, av[1]);
 		}
 	}
+	free(av[0]);
 	free(av);
 	exit(status);
 }
