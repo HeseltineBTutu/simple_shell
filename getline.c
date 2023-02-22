@@ -9,9 +9,10 @@
 char *allocate_buffer(size_t size)
 {
 	char *buffer = malloc(size);
+
 	if (!buffer)
-		return NULL;
-	return buffer;
+		return (NULL);
+	return (buffer);
 }
 
 /**
@@ -24,16 +25,17 @@ char *allocate_buffer(size_t size)
 int read_char(FILE *stream, char *c)
 {
 	int n;
-	static int end_of_file = 0;
+	static int end_of_file;
+
 	if (end_of_file)
-		return 0;
+		return (0);
 	n = fread(c, 1, 1, stream);
 	if (n == 0 && !feof(stream))
 	{
 		end_of_file = 1;
-		return 0;
+		return (0);
 	}
-	return 1;
+	return (1);
 }
 
 /**
@@ -51,15 +53,16 @@ int append_char(char **buffer, size_t *size, size_t pos, char c)
 	{
 		size_t new_size = *size * 2;
 		char *new_buffer = allocate_buffer(new_size);
+
 		if (!new_buffer)
-			return 0;
+			return (0);
 		strncpy(new_buffer, *buffer, pos);
 		free(*buffer);
 		*buffer = new_buffer;
 		*size = new_size;
 	}
 	(*buffer)[pos] = c;
-	return 1;
+	return (1);
 }
 
 /**
@@ -72,27 +75,28 @@ int append_char(char **buffer, size_t *size, size_t pos, char c)
  */
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
 {
-	static char *buffer = NULL;
-	static size_t buffer_size = 0;
+	static char *buffer;
+	static size_t buffer_size;
 	size_t pos = 0;
 	char c;
+
 	if (!buffer)
 	{
 		buffer_size = BUFSIZE;
 		buffer = allocate_buffer(buffer_size);
 		if (!buffer)
-			return -1;
+			return (-1);
 	}
 	while (read_char(stream, &c))
 	{
 		if (c == '\n')
 			break;
 		if (!append_char(&buffer, &buffer_size, pos, c))
-			return -1;
+			return (-1);
 		pos++;
 	}
 	if (!append_char(&buffer, &buffer_size, pos, '\0'))
-		return -1;
+		return (-1);
 	if (*lineptr)
 		free(*lineptr);
 	*lineptr = buffer;
@@ -100,6 +104,6 @@ ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
 		*n = buffer_size;
 	buffer = NULL;
 	buffer_size = 0;
-	return pos;
+	return (pos);
 }
 

@@ -15,9 +15,9 @@ char **getargs(char *command);
 int execute(char **args);
 char *get_path(void);
 char *find_command(char *command);
-int built_in_exit(char **av);
+void built_in_exit(char **av);
 void built_in_env(char *cmd);
 extern char **environ;
-ssize_t get_line(char **buffer, size_t *buffer_size);
+ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
 char **arr;
 #endif

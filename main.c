@@ -104,7 +104,7 @@ int execute(char **av)
 	{
 		execve(fullpath, av, environ);
 		perror(arr[0]);
-		_exit(EXIT_FAILURE);
+		return (-1);
 	}
 	else
 	{

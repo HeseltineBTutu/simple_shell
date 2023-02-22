@@ -1,31 +1,24 @@
 #include "main.h"
 /**
  * built_in_exit - built-in function to exit the shell
- * @av: command line arguments
- * Return: 0 on success, or an error code if there was an error
+ * @cmd: command line arguments
  */
-int built_in_exit(char **av)
+void built_in_exit(char **cmd)
 {
-	long int status = 0;
+	int status;
 
-	if (av[0] == NULL || strcmp(av[0], "exit") != 0)
-		return (0);
-	if (av[1] != NULL)
+	if (strcmp("exit", cmd[0]) == 0)
 	{
-		status = strtol(av[1], NULL, 10);
-		if (status <= 0)
-		{
-			fprintf(stderr, "%s: exit: %d: Illegal number: %s\n", arr[0], 1, av[1]);
-		}
+		if (cmd[1])
+			status = atoi(cmd[1]);
+		free(cmd[0]);
+		free(cmd);
+		exit(status);
 	}
-	free(av[0]);
-	free(av);
-	exit(status);
 }
 /**
  * built_in_env - print the current environment
  * @cmd: argument 0
- * Return: Always returns 0, to proceed with execution.
  */
 void built_in_env(char *cmd)
 {
