@@ -6,14 +6,18 @@
 void built_in_exit(char **cmd)
 {
 	long int status;
+	char *endptr;
 
 	if (strcmp("exit", cmd[0]) == 0)
 	{
 		if (cmd[1])
 		{
-			status = strtol(cmd[1], NULL, 10);
-			if (status <= 0)
-				dprintf(STDERR_FILENO, "%s: exit: Illegal number: %s\n", arr[0], cmd[1]);
+			status = strtol(cmd[1], &endptr, 10);
+			if (*endptr != '\0')
+			{
+				fprintf(stderr, "exit: %s: numeric argument required\n", cmd[1]);
+				exit(EXIT_FAILURE);
+			}
 		}
 		free(cmd[0]);
 		free(cmd);
