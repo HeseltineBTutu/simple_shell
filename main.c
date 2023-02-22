@@ -91,8 +91,7 @@ int execute(char **av)
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
-		fprintf(stderr, "%s: command not found\n", arr[0]);
-		free(av);
+		fprintf(stderr, "%s: command not found\n", arr[0]), free(av);
 		return (-1);
 	}
 	pid = fork();

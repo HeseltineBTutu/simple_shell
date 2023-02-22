@@ -23,7 +23,7 @@ int built_in_exit(char **av)
 }
 /**
  * built_in_env - print the current environment
- *
+ * @cmd: argument 0
  * Return: Always returns 0, to proceed with execution.
  */
 int built_in_env(char *cmd)
