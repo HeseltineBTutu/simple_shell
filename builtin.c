@@ -24,9 +24,12 @@ void built_in_env(char *cmd)
 {
 	char **env = environ;
 
-	while (*env)
+	if (strcmp("env", cmd) == 0)
 	{
-		printf("%s\n", *env);
-		env++;
+		while (*env)
+		{
+			printf("%s\n", *env);
+			env++;
+		}
 	}
 }
