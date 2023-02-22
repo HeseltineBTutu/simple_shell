@@ -39,7 +39,11 @@ int main(int argc, char **argv)
 				return (0);
 			}
 			else
+			{
+				perror("getline");
+				free(command);
 				return (1);
+			}
 		}
 		args = getargs(command);
 		execute(args);
