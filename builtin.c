@@ -1,28 +1,49 @@
 #include "main.h"
 /**
- * built_in_exit - exit shell
- * @cmd: array of string
- * Return: Always returns 0, to proceed with execution.
+ * built_in_exit - built-in function to exit the shell
+ * @av: command line arguments
+ * Return: 0 on success, or an error code if there was an error
  */
-void built_in_exit(char **cmd)
+int built_in_exit(char **av)
 {
-	int status;
+  int status = 0;
+  char *endptr;
 
-	if (cmd == NULL || cmd[0] == NULL)
-		return;
+  if (av[0] == NULL || strcmp(av[0], "exit") != 0)
+    return (0); /* not the exit command */
 
-	if ((strcmp("exit", cmd[0]) == 0))
-	{
-		status = EXIT_SUCCESS;
+  if (av[1] != NULL)
+  {
+    /* parse exit status from command line argument */
+    status = strtol(av[1], &endptr, 10);
+    if (*endptr != '\0')
+    {
+      fprintf(stderr, "exit: invalid argument '%s'\n", av[1]);
+      return (-1);
+    }
+  }
+  else if (getenv("$?") != NULL)
+  {
+    /* parse exit status from environment variable */
+    status = strtol(getenv("$?"), &endptr, 10);
+    if (*endptr != '\0')
+    {
+      fprintf(stderr, "exit: invalid environment variable '$?'\n");
+      return (-1);
+    }
+  }
 
-		if (cmd[1])
-			status = (int)strtol(cmd[1], NULL, 10);
-		free(cmd[0]);
-		free(cmd);
-		exit(status);
-	}
+  /* check if exit status is in range */
+  if (status < 0 || status > 255)
+  {
+    fprintf(stderr, "exit: exit status out of range\n");
+    return (-1);
+  }
+
+  /* free memory and exit */
+  free(av);
+  exit(status);
 }
-
 /**
  * built_in_env - print the current environment
  * @cmd: executable
