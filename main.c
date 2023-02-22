@@ -57,23 +57,14 @@ int main(int argc, char **argv)
  */
 char **getargs(char *command)
 {
-	int i = 0;
-	char delim[] = " \t\r\n";
-	char *token;
-	char **av = malloc(sizeof(char *) * 100);
+    char **args;
 
-	if (av == NULL)
-		return (0);
-	token = strtok(command, delim);
-	while (token)
-	{
-		av[i] = token;
-		i++;
-		token = strtok(NULL, delim);
-	}
-	av[i] = NULL;
-	return (av);
+    args = split_string(command, " \t\r\n");
+    if (args == NULL)
+        perror("split_string");
+    return (args);
 }
+
 /**
  * execute - executes a command
  * @av: command line arguments

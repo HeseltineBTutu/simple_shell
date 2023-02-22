@@ -18,6 +18,7 @@ char *find_command(char *command);
 void built_in_exit(char **av);
 void built_in_env(char *cmd);
 extern char **environ;
-ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 char **arr;
+char **split_string(char *str, const char *delim);
 #endif
