@@ -6,7 +6,7 @@
  */
 int built_in_exit(char **av)
 {
-	int status = 0;
+	long int status = 0;
 
 	if (av[0] == NULL || strcmp(av[0], "exit") != 0)
 		return (0);
@@ -27,7 +27,7 @@ int built_in_exit(char **av)
  * @cmd: argument 0
  * Return: Always returns 0, to proceed with execution.
  */
-int built_in_env(char *cmd)
+void built_in_env(char *cmd)
 {
 	char **env = environ;
 
@@ -39,5 +39,4 @@ int built_in_env(char *cmd)
 			env++;
 		}
 	}
-	return (0);
 }
