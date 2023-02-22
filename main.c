@@ -87,6 +87,7 @@ int execute(char **av)
 		return (-1);
 	}
 	built_in_exit(av);
+	built_in_env();
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
