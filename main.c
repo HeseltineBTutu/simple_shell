@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 		/*check if stdin is open to determine interactive or non interactive mode*/
 		if ((isatty(STDIN_FILENO)))
 			printf("%s", prompt);
-		read = getline(&command, &len, stdin);
+		read = get_line(&command, &len, stdin);
 		if (read == -1)
 		{
 			/*check if getline failed because of end of file or due to error*/
