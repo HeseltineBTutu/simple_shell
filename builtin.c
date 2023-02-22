@@ -1,5 +1,7 @@
 #include "main.h"
+
 /**
+<<<<<<< HEAD
  * built_in_exit - built-in function to exit the shell
  * @av: command line arguments
  * Return: 0 on success, or an error code if there was an error
@@ -11,7 +13,14 @@ int built_in_exit(char **av)
 
   if (av[0] == NULL || strcmp(av[0], "exit") != 0)
     return (0); /* not the exit command */
-
+/** built_in_exit - exit shell
+ *
+ * Return: Always returns 0, to proceed with execution.
+ */
+int built_in_exit(void)
+{
+	 _exit(0);
+}
   if (av[1] != NULL)
   {
     /* parse exit status from command line argument */
@@ -46,19 +55,34 @@ int built_in_exit(char **av)
 }
 /**
  * built_in_env - print the current environment
- * @cmd: executable
+ *
  * Return: Always returns 0, to proceed with execution.
  */
-void built_in_env(char *cmd)
+int built_in_env(void)
 {
 	char **env = environ;
 
-	if ((strcmp("env", cmd) == 0))
+	while (*env)
 	{
-		while (*env)
-		{
-			printf("%s\n", *env);
-			env++;
-		}
+		printf("%s\n", *env);
+		env++;
+	}
+	return (0);
+}
+/**
+ * execute_built_in - executes env and exit
+ * @command: array of strings
+ */
+void execute_built_in(char **command)
+{
+	if (strcmp(command[0], "exit") == 0)
+	{
+		free(command[0]);
+		free(command);
+		built_in_exit();
+	}
+	if (strncmp(command[0], "env", 3) == 0)
+	{
+		built_in_env();
 	}
 }

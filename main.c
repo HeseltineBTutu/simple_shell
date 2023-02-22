@@ -93,12 +93,12 @@ int execute(char **av)
 		free(av);
 		return (-1);
 	}
-	built_in_exit(av);
-	built_in_env(av[0]);
+	execute_built_in(av);
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
-		fprintf(stderr, "%s: command not found\n", arr[0]), free(av);
+		fprintf(stderr, "%s: command not found\n", arr[0]);
+		free(av);
 		return (-1);
 	}
 	pid = fork();
