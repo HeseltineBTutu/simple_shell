@@ -20,5 +20,5 @@ void built_in_env(char *cmd);
 extern char **environ;
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 char **arr;
-char **split_string(char *str, const char *delim);
+void built_in_cd(char **cmd);
 #endif
