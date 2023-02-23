@@ -6,7 +6,6 @@
 void built_in_exit(char **cmd)
 {
 	long int status = 0;
-	struct sigaction sa;
 
 	if (strcmp("exit", cmd[0]) == 0)
 	{
