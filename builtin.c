@@ -39,7 +39,7 @@ void built_in_exit(char **cmd)
 /**
  * built_in_env - print the current environment
  * @cmd: argument 0
- */
+ *
 void built_in_env(char *cmd)
 {
 	char **env = environ;
@@ -52,4 +52,4 @@ void built_in_env(char *cmd)
 			env++;
 		}
 	}
-}
+}*/
