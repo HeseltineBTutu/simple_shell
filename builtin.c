@@ -15,7 +15,6 @@ void built_in_exit(char **cmd)
 			if (status <= 0)
 			{
 				dprintf(STDERR_FILENO, "%s: exit: Illegal number: %s\n", arr[0], cmd[1]);
-				exit(EXIT_FAILURE);
 			}
 		}
 		free(cmd[0]);
