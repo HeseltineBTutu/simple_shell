@@ -15,6 +15,8 @@ char *find_command(char *command)
 	if ((access(command, F_OK) == 0))
 		return (command);
 	path = getenv("PATH");
+	if (path == NULL)
+		return (NULL);
 	i = 0;
 	while (path[i])
 	{
@@ -26,10 +28,12 @@ char *find_command(char *command)
 		if (dir == NULL)
 			return (NULL);
 		strncpy(dir, &path[i], len);
-		strcat(dir, "/");
+		dir[len] = '/';
+		dir[len + 1] = '\0';
 		fullpath = malloc(sizeof(char) * (len + strlen(command) + 2));
 		if (fullpath == NULL)
 		{
+			free(dir);
 			return (NULL);
 		}
 		strcpy(fullpath, dir);
