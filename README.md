@@ -1,6 +1,6 @@
 # cisfun
 Simple UNIX implementation written for ALX Software Engineering.
-##Description
+## Description
 The Simple Shell is a command-line interpreter or shell that provides an both interactive and noninteractive command 
 line user interface for Unix-like operating systems.
 ## Case Implementation 1: Non-interactive

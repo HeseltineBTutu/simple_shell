@@ -48,7 +48,6 @@ int main(int argc, char **argv)
 		args = getargs(command);
 		execute(args);
 	}
-	free(args);
 	return (0);
 }
 /**
@@ -92,7 +91,6 @@ int execute(char **av)
 		return (-1);
 	}
 	built_in_exit(av);
-	/*built_in_env(av[0]);*/
 	fullpath = find_command(av[0]);
 	if (fullpath == NULL)
 	{
