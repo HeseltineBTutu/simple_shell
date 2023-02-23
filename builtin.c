@@ -2,8 +2,9 @@
 /**
  * built_in_exit - built-in function to exit the shell
  * @cmd: command line arguments
+ * Return: 1 on execution 0 otherwise
  */
-void built_in_exit(char **cmd)
+int built_in_exit(char **cmd)
 {
 	long int status = 0;
 
@@ -14,28 +15,33 @@ void built_in_exit(char **cmd)
 			status = strtol(cmd[1], NULL, 10);
 			if (status <= 0)
 			{
-				dprintf(STDERR_FILENO, "%s: exit: Illegal number: %s\n", cmd[0], cmd[1]);
+				return (0);
 			}
 		}
 		free(cmd[0]);
 		free(cmd);
-		exit(status);
+		_exit(status);
 	}
+	return (1);
 }
 /**
  * built_in_env - print the current environment
  * @cmd: argument 0
- *
-void built_in_env(char *cmd)
+ * Return: 1 on execution, 0 if not
+ */
+int built_in_env(char *cmd)
 {
 	char **env = environ;
 
+	if (!env)
+		return (0);
 	if (strcmp("env", cmd) == 0)
 	{
 		while (*env)
 		{
-			printf("%s\n", *env);
+			printf("%p\n", (const void *)*env);
 			env++;
 		}
 	}
-}*/
+	return (1);
+}

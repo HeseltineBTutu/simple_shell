@@ -90,8 +90,8 @@ int execute(char **av)
 		free(av);
 		return (-1);
 	}
-	built_in_exit(av);
 	fullpath = find_command(av[0]);
+	built_in_exit(av);
 	if (fullpath == NULL)
 	{
 		fprintf(stderr, "%s: command not found\n", arr[0]), free(av);
