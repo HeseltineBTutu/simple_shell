@@ -57,14 +57,23 @@ int main(int argc, char **argv)
  */
 char **getargs(char *command)
 {
-    char **args;
+	int i = 0;
+	char delim[] = " \t\r\n";
+	char *token;
+	char **av = malloc(sizeof(char *) * 100);
 
-    args = split_string(command, " \t\r\n");
-    if (args == NULL)
-        perror("split_string");
-    return (args);
+	if (av == NULL)
+		return (0);
+	token = strtok(command, delim);
+	while (token)
+	{
+		av[i] = token;
+		i++;
+		token = strtok(NULL, delim);
+	}
+	av[i] = NULL;
+	return (av);
 }
-
 /**
  * execute - executes a command
  * @av: command line arguments
@@ -93,15 +102,13 @@ int execute(char **av)
 	if (pid < 0)
 	{
 		perror(arr[0]);
-		free(av);
 		return (-1);
 	}
 	if (pid == 0)
 	{
 		execve(fullpath, av, environ);
 		perror(arr[0]);
-		free(av);
-		exit(EXIT_FAILURE);
+		return (-1);
 	}
 	else
 	{
@@ -109,22 +116,6 @@ int execute(char **av)
 		if (w == -1)
 		{
 			perror(arr[0]);
-			free(av);
-			return (-1);
-		}
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) != 0)
-			{
-				fprintf(stderr, "%s: command with status %d\n", arr[0], WEXITSTATUS(status));
-				free(av);
-				return (-1);
-			}
-		}
-		else if (WIFSIGNALED(status))
-		{
-			fprintf(stderr, "%s: command terminated by signal %d\n", arr[0], WTERMSIG(status));
-			free(av);
 			return (-1);
 		}
 	}
