@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
 	(void) argc;
 	arr = argv;
-	signal(SIGINT, sigint_handler);
+	signal(SIGINT, sighan);
 	while (1)
 	{
 		/*check if stdin is open to determine interactive or non interactive mode*/
@@ -48,6 +48,7 @@ int main(int argc, char **argv)
 		args = getargs(command);
 		execute(args);
 	}
+	free(args);
 	return (0);
 }
 /**

@@ -12,11 +12,11 @@ char *find_command(char *command)
 	char *path;
 	int i, j, len;
 
-	if ((access(command, F_OK) == 0))
+	if ((access(command, F_OK | X_OK) == 0))
 		return (command);
 	path = getenv("PATH");
 	if (path == NULL)
-		return (NULL);
+		return (0);
 	i = 0;
 	while (path[i])
 	{
@@ -26,7 +26,7 @@ char *find_command(char *command)
 		len = j - i;
 		dir = malloc(sizeof(char) * len + 2);
 		if (dir == NULL)
-			return (NULL);
+			return (0);
 		strncpy(dir, &path[i], len);
 		dir[len] = '/';
 		dir[len + 1] = '\0';
@@ -34,17 +34,26 @@ char *find_command(char *command)
 		if (fullpath == NULL)
 		{
 			free(dir);
-			return (NULL);
+			return (0);
 		}
 		strcpy(fullpath, dir);
 		strcat(fullpath, command);
 		free(dir);
 		if (access(fullpath, F_OK) == 0)
+		{
 			return (fullpath);
+		}
 		free(fullpath);
 		i = j;
 		if (path[i] == ':')
 			i++;
 	}
-	return (NULL);
+	free(&path[i]);
+	return (0);
+}
+int main()
+{
+	char *cmd = "ls";
+	char *path = find_command(cmd);
+	printf("%s\n", path);
 }
