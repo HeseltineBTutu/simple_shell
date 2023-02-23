@@ -15,8 +15,12 @@ char *find_command(char *command)
 	if ((access(command, F_OK) == 0))
 		return (command);
 	path = getenv("PATH");
-	if (path == NULL)
+	if (path == NULL || strlen(path) == 0)
+	{
+		if ((access(command, F_OK) == 0))
+			return (command);
 		return (NULL);
+	}
 	i = 0;
 	while (path[i])
 	{
