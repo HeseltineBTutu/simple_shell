@@ -10,7 +10,7 @@ char *find_command(char *command)
 	char *path, *path_copy, *path_token, *file_path;
 	int command_length, directory_length;
 	struct stat buffer;
-
+/*
 <<<<<<< HEAD
 	if ((access(command, F_OK | X_OK) == 0))
 		return (command);
@@ -47,7 +47,7 @@ char *find_command(char *command)
 		i = j;
 		if (path[i] == ':')
 			i++;
-=======
+=======*/
 	path = getenv("PATH");
 
 	if (path)
@@ -81,15 +81,6 @@ char *find_command(char *command)
 		{
 			return (command);
 		}
-		return (NULL);
->>>>>>> 1dc4da63f727d150ad2de2fc0790350ab30338fe
 	}
-	free(&path[i]);
-	return (0);
-}
-int main()
-{
-	char *cmd = "ls";
-	char *path = find_command(cmd);
-	printf("%s\n", path);
+		return (NULL);
 }
