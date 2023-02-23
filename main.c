@@ -114,7 +114,7 @@ int execute(char **av)
 		w = wait(&status);
 		if (w == -1)
 		{
-			/*perror(arr[0]);*/
+			perror(arr[0]);
 			return (-1);
 		}
 	}
