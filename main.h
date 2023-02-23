@@ -21,4 +21,5 @@ extern char **environ;
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 char **arr;
 void built_in_cd(char **cmd);
+void sigint_handler(int sig);
 #endif
