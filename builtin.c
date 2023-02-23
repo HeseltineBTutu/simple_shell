@@ -21,12 +21,19 @@ void built_in_exit(char **cmd)
 		free(cmd[0]);
 		free(cmd);
 
-		memset(&sa, 0, sizeof(sa));
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = SA_RESTART;
-		sigaction(SIGINT, &sa, NULL);
-		/* Exit normally*/
-		exit(status);
+		if (errno != 0)
+		{
+			exit(1);
+		}
+		else
+		{
+			memset(&sa, 0, sizeof(sa));
+			sigemptyset(&sa.sa_mask);
+			sa.sa_flags = SA_RESTART;
+			sigaction(SIGINT, &sa, NULL);
+			/* Exit normally*/
+			exit(status);
+		}
 	}
 }
 /**
