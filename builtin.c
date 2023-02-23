@@ -5,7 +5,7 @@
  */
 void built_in_exit(char **cmd)
 {
-	long int status;
+	long int status = 0;
 
 	if (strcmp("exit", cmd[0]) == 0)
 	{
