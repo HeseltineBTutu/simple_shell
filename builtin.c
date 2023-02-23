@@ -20,7 +20,7 @@ int built_in_exit(char **cmd)
 		}
 		free(cmd[0]);
 		free(cmd);
-		_exit(status);
+		exit(status);
 	}
 	return (1);
 }
@@ -39,7 +39,7 @@ int built_in_env(char *cmd)
 	{
 		while (*env)
 		{
-			printf("%p\n", (const void *)*env);
+			printf("%s\n", *env);
 			env++;
 		}
 	}

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 			{
 				perror("getline");
 				free(command);
-				return (1);
+				return (0);
 			}
 		}
 		args = getargs(command);
@@ -91,6 +91,7 @@ int execute(char **av)
 		return (-1);
 	}
 	fullpath = find_command(av[0]);
+	built_in_env(av[0]);
 	built_in_exit(av);
 	if (fullpath == NULL)
 	{
