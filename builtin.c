@@ -18,6 +18,8 @@ int built_in_exit(char **cmd)
 				return (0);
 			}
 		}
+		if (!cmd[1])
+			status = 0;
 		free(cmd[0]);
 		free(cmd);
 		exit(status);
