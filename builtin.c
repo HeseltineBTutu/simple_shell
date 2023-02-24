@@ -26,24 +26,3 @@ int built_in_exit(char **cmd)
 	}
 	return (1);
 }
-/**
- * built_in_env - print the current environment
- * @cmd: argument 0
- * Return: 1 on execution, 0 if not
- */
-int built_in_env(char *cmd)
-{
-	char **env = environ;
-
-	if (!env)
-		return (0);
-	if (strcmp("env", cmd) == 0)
-	{
-		while (*env)
-		{
-			printf("%s\n", *env);
-			env++;
-		}
-	}
-	return (1);
-}
