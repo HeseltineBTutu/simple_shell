@@ -1,88 +1,99 @@
 #include "main.h"
 
-int main(int ac, char **argv)
+/**
+ * display_prompt - Display the shell prompt
+ */
+void display_prompt(void)
 {
-	char *prompt;
-	char *lineptr = NULL;
-	size_t n = 0;
-	ssize_t bytes_read;
-	char **command_argv;
-	(void)ac;
-	(void)argv;
-
-	prompt = "(MiniShell)$ ";
-	while (1)
-	{
-		printf("%s", prompt);
-		bytes_read = getline(&lineptr, &n, stdin);
-		if (bytes_read == -1)
-		{
-			printf("Exiting shell\n");
-			if (lineptr != NULL)
-			{
-				free(lineptr);
-			}
-			return (-1);
-		}
-		command_argv = parse_command(lineptr);
-		if (command_argv == NULL)
-		{
-			printf("Memory Allocation Failure\n");
-			free(lineptr);
-			return (-1);
-		}
-		printf("%s\n", lineptr);
-	}
-	if (lineptr != NULL)
-	{
-		free(lineptr);
-	}
-return (0);
+	printf("($) ");
 }
 
 /**
- * parse_command - Parse a command string into an argument vector (argv).
- * @lineptr: The input string to be parsed.
+ * read_command - Read a command from the user
  *
- * Return: An array of strings representing the command arguments (argv).
- *         The array should be terminated with a NULL pointer.
- *         NULL is returned in case of a memory allocation failure.
+ * Return: The command entered by the user
  */
-char **parse_command(char *lineptr)
+char *read_command(void)
 {
-	char *lineptr_copy;
-	char *token;
-	char **argv;
-	int i;
-	char *tokens[MAX_NUM_TOKENS];
+	char *command = NULL;
+	size_t command_size = 0;
+	ssize_t bytes_read;
 
-	int num_tokens = 0;
+	bytes_read = getline(&command, &command_size, stdin);
 
-	lineptr_copy = strdup(lineptr);
-	if (lineptr_copy == NULL)
+	if (bytes_read == -1)
 	{
-		printf("Memory allocation Error");
-		free(lineptr_copy);
-		return (NULL);
+		if (feof(stdin))
+		{
+			printf("\n");
+			exit(EXIT_SUCCESS);
+		}
 	}
-	token =  strtok(lineptr_copy, " ");
-	while (token != NULL && num_tokens < MAX_NUM_TOKENS)
+	if (bytes_read > 0 && command[bytes_read - 1] == '\n')
+		command[bytes_read - 1] = '\0';
+
+	return (command);
+}
+
+/**
+ * execute_command - Execute the command
+ *
+ * @command: The command to execute
+ */
+void execute_command(char *command)
+{
+	pid_t child_pid;
+	int status;
+
+	char **args;
+	char num_args = 2;
+
+	args = malloc(sizeof(char *) * num_args);
+
+	if (args == NULL)
 	{
-		tokens[num_tokens++] = token;
-		token = strtok(NULL, " ");
+		perror("malloc");
+		return;
 	}
-	argv = (char **)malloc((num_tokens + 1) * sizeof(char *));
-	if (argv == NULL)
+	args[0] = command;
+	args[1] = NULL;
+
+	child_pid = fork();
+
+	if (child_pid == -1)
 	{
-		printf("Memory allocation Error");
-		free(lineptr_copy);
-		return (NULL);
+		perror("fork");
+		free(args);
+		return;
 	}
-	for (i = 0; i < num_tokens; i++)
+	if (child_pid == 0)
 	{
-		argv[i] = strdup(tokens[i]);
+		execve(command, args, NULL);
+		perror("execve");
+		exit(EXIT_FAILURE);
 	}
-	argv[i] = NULL;
-	free(lineptr_copy);
-	return (argv);
+	else
+	{
+		wait(&status);
+	}
+	free(args);
+}
+
+/**
+ * main - The main function
+ *
+ * Return: Always 0
+ */
+int main(void)
+{
+	char *command;
+
+	while (1)
+	{
+		display_prompt();
+		command = read_command();
+		execute_command(command);
+		free(command);
+	}
+	return (0);
 }
