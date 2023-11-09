@@ -41,6 +41,8 @@ int parse_input(char **tokens)
 	int token_count = 0;
 	int i;
 
+	tokens[0] = strdup("");
+
 	token = strtok(tokens[0], " \t");
 
 	while (token != NULL && token_count < MAX_ARGUMENTS)

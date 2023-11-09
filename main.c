@@ -23,23 +23,75 @@ void execute_command(char **tokens)
 		return;
 	}
 
-	child_pid = fork();
-
-	if (child_pid == -1)
+	if (is_command_in_path(tokens[0]))
 	{
-		perror("fork");
-		return;
-	}
-	if (child_pid == 0)
-	{
-		execve(tokens[0], tokens, NULL);
-		perror("execve");
-		exit(EXIT_FAILURE);
+		child_pid = fork();
+		if (child_pid == -1)
+		{
+			perror("fork");
+			return;
+		}
+		if (child_pid == 0)
+		{
+			execve(tokens[0], tokens, NULL);
+			perror("execve");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			wait(&status);
+		}
 	}
 	else
 	{
-		wait(&status);
+		printf("Command not found: %s\n", tokens[0]);
 	}
+}
+
+/**
+ * is_command_in_path - Check if a command exists in the directories listed
+ *
+ * @command: The command to check
+ * Return: 1 if the command exists, 0 if not
+ */
+int is_command_in_path(const char *command)
+{
+	char *dir;
+	char *full_path;
+
+	char *path = getenv("PATH");
+	char *path_copy = strdup(path);
+
+	if (path_copy == NULL)
+	{
+		perror("strdup");
+		return (0);
+	}
+	dir = strtok(path_copy, ":");
+	while (dir != NULL)
+	{
+		full_path = malloc(strlen(dir) + strlen(command) + 2);
+		if (full_path == NULL)
+		{
+			perror("malloc");
+			free(path_copy);
+			return (0);
+		}
+		strcpy(full_path, dir);
+		strcat(full_path, "/");
+		strcat(full_path, command);
+
+		if (access(full_path, X_OK) == 0)
+		{
+			free(full_path);
+			free(path_copy);
+			return (1);
+		}
+		free(full_path);
+		dir = strtok(NULL, ":");
+	}
+	free(path_copy);
+	return (0);
 }
 
 /**
