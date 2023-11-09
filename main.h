@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/wait.h>
 void display_prompt(void);
-char *read_command(void);
-void execute_command(char *command);
+char **read_command(void);
+#define MAX_ARGUMENTS 100
+void execute_command(char **tokens);
 #endif

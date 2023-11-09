@@ -13,13 +13,18 @@ void display_prompt(void)
  *
  * Return: The command entered by the user
  */
-char *read_command(void)
+char **read_command(void)
 {
-	char *command = NULL;
-	size_t command_size = 0;
+	char *input = NULL;
+	size_t input_size = 0;
 	ssize_t bytes_read;
+	char **tokens;
+	char *token;
+	int i;
 
-	bytes_read = getline(&command, &command_size, stdin);
+	int token_count = 0;
+
+	bytes_read = getline(&input, &input_size, stdin);
 
 	if (bytes_read == -1)
 	{
@@ -29,10 +34,41 @@ char *read_command(void)
 			exit(EXIT_SUCCESS);
 		}
 	}
-	if (bytes_read > 0 && command[bytes_read - 1] == '\n')
-		command[bytes_read - 1] = '\0';
+	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
+		input[bytes_read - 1] = '\0';
 
-	return (command);
+	tokens = malloc(sizeof(char *) * (MAX_ARGUMENTS + 1));
+
+	if (tokens == NULL)
+	{
+		perror("malloc");
+		free(input);
+		return (NULL);
+	}
+
+	token = strtok(input, " \t");
+
+	while (token != NULL && token_count < MAX_ARGUMENTS)
+	{
+		tokens[token_count] = strdup(token);
+		if (tokens[token_count] == NULL)
+		{
+			perror("strdup");
+			for (i = 0; i < token_count; i++)
+			{
+				free(tokens[i]);
+			}
+			free(tokens);
+			free(input);
+			return (NULL);
+		}
+
+		token = strtok(NULL, " \t");
+		token_count++;
+	}
+	tokens[token_count] = NULL;
+	free(input);
+	return (tokens);
 }
 
 /**
@@ -40,35 +76,26 @@ char *read_command(void)
  *
  * @command: The command to execute
  */
-void execute_command(char *command)
+void execute_command(char **tokens)
 {
 	pid_t child_pid;
 	int status;
 
-	char **args;
-	char num_args = 2;
-
-	args = malloc(sizeof(char *) * num_args);
-
-	if (args == NULL)
+	if (tokens == NULL || tokens[0] == NULL)
 	{
-		perror("malloc");
 		return;
 	}
-	args[0] = command;
-	args[1] = NULL;
 
 	child_pid = fork();
 
 	if (child_pid == -1)
 	{
 		perror("fork");
-		free(args);
 		return;
 	}
 	if (child_pid == 0)
 	{
-		execve(command, args, NULL);
+		execve(tokens[0], tokens, NULL);
 		perror("execve");
 		exit(EXIT_FAILURE);
 	}
@@ -76,7 +103,6 @@ void execute_command(char *command)
 	{
 		wait(&status);
 	}
-	free(args);
 }
 
 /**
@@ -86,14 +112,21 @@ void execute_command(char *command)
  */
 int main(void)
 {
-	char *command;
+	char **tokens;
+	int i;
 
 	while (1)
 	{
 		display_prompt();
-		command = read_command();
-		execute_command(command);
-		free(command);
+		tokens = read_command();
+
+		if (tokens != NULL)
+		{
+			execute_command(tokens);
+			for (i = 0; tokens[i] != NULL; i++)
+				free(tokens[i]);
+			free(tokens);
+		}
 	}
 	return (0);
 }
