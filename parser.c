@@ -91,8 +91,6 @@ int parse_input(char **tokens)
 		return (-1);
 	}
 
-	free(tokens[token_count]);
-
 	tokens[token_count ] = NULL;
 
 	return (token_count);
