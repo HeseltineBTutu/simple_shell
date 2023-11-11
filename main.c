@@ -18,29 +18,36 @@ void execute_command(char **tokens)
 	pid_t child_pid;
 	int status;
 
+	char *full_path;
+
 	if (tokens == NULL || tokens[0] == NULL)
 	{
 		return;
 	}
 
-	if (is_command_in_path(tokens[0]))
+	full_path = is_command_in_path(tokens[0]);
+
+	if (full_path != NULL)
 	{
 		child_pid = fork();
 		if (child_pid == -1)
 		{
 			perror("fork");
+			free(full_path);
 			return;
 		}
 		if (child_pid == 0)
 		{
-			execve(tokens[0], tokens, NULL);
+			execve(full_path, tokens, NULL);
 			perror("execve");
+			free(full_path);
 			exit(EXIT_FAILURE);
 		}
 		else
 		{
 			wait(&status);
 		}
+		free(full_path);
 	}
 	else
 	{
@@ -52,20 +59,22 @@ void execute_command(char **tokens)
  * is_command_in_path - Check if a command exists in the directories listed
  *
  * @command: The command to check
- * Return: 1 if the command exists, 0 if not
+ * Return: return command if it exits or NULL
  */
-int is_command_in_path(const char *command)
+char  *is_command_in_path(const char *command)
 {
 	char *dir;
 	char *full_path;
+	char *path_copy;
 
 	char *path = getenv("PATH");
-	char *path_copy = strdup(path);
+
+	path_copy = strdup(path);
 
 	if (path_copy == NULL)
 	{
 		perror("strdup");
-		return (0);
+		return (NULL);
 	}
 	dir = strtok(path_copy, ":");
 	while (dir != NULL)
@@ -75,7 +84,7 @@ int is_command_in_path(const char *command)
 		{
 			perror("malloc");
 			free(path_copy);
-			return (0);
+			return (NULL);
 		}
 		strcpy(full_path, dir);
 		strcat(full_path, "/");
@@ -83,15 +92,14 @@ int is_command_in_path(const char *command)
 
 		if (access(full_path, X_OK) == 0)
 		{
-			free(full_path);
 			free(path_copy);
-			return (1);
+			return (full_path);
 		}
 		free(full_path);
 		dir = strtok(NULL, ":");
 	}
 	free(path_copy);
-	return (0);
+	return (NULL);
 }
 
 /**
@@ -109,16 +117,20 @@ int main(void)
 	while (1)
 	{
 		display_prompt();
-		input = read_input();
+
+		input = read_input(tokens);
 
 		if (input != NULL)
 		{
 			token_count = parse_input(tokens);
+
 			if (token_count > 0)
 			{
 				execute_command(tokens);
 				for (i = 0; i < token_count; i++)
-					free(tokens[i]);
+				{
+					free(tokens[0]);
+				}
 			}
 			free(input);
 		}

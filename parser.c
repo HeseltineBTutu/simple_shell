@@ -5,11 +5,12 @@
  *
  * Return: The input entere by the user
  */
-char *read_input(void)
+char *read_input(char *tokens[])
 {
 	char *input = NULL;
 	size_t input_size = 0;
 	ssize_t bytes_read;
+
 
 	bytes_read = getline(&input, &input_size, stdin);
 
@@ -23,6 +24,8 @@ char *read_input(void)
 	}
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
+
+	tokens[0] = input;
 
 	return (input);
 }
@@ -39,11 +42,16 @@ int parse_input(char **tokens)
 {
 	char *token;
 	int token_count = 0;
-	int i;
+	char *input_copy;
 
-	tokens[0] = strdup("");
+	input_copy = strdup(tokens[0]);
+	if (input_copy == NULL)
+	{
+		perror("strdup");
+		return (-1);
+	}
 
-	token = strtok(tokens[0], " \t");
+	token = strtok(input_copy, " \t");
 
 	while (token != NULL && token_count < MAX_ARGUMENTS)
 	{
@@ -51,15 +59,14 @@ int parse_input(char **tokens)
 		if (tokens[token_count] == NULL)
 		{
 			perror("strdup");
-			for (i = 0; i < token_count; i++)
-			{
-				free(tokens[i]);
-			}
+			free(input_copy);
 			return (-1);
 		}
-		token = strtok(NULL, " \t");
 		token_count++;
+		token = strtok(NULL, " \t");
 	}
+	free(input_copy);
 	tokens[token_count] = NULL;
+
 	return (token_count);
 }
