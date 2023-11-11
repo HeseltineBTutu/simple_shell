@@ -14,6 +14,12 @@ char *read_input(char *tokens[])
 
 	bytes_read = getline(&input, &input_size, stdin);
 
+	if (input == NULL)
+	{
+		perror("getline");
+		exit(EXIT_FAILURE);
+	}
+
 	if (bytes_read == -1)
 	{
 		if (feof(stdin))
@@ -43,6 +49,13 @@ int parse_input(char **tokens)
 	char *token;
 	int token_count = 0;
 	char *input_copy;
+	int i;
+
+
+	if (tokens == NULL || tokens[0] == NULL || tokens[0][0] == '\0')
+	{
+		return (0);
+	}
 
 	input_copy = strdup(tokens[0]);
 	if (input_copy == NULL)
@@ -60,13 +73,27 @@ int parse_input(char **tokens)
 		{
 			perror("strdup");
 			free(input_copy);
+
+			for (i = 0; i < token_count; i++)
+			{
+				free(tokens[i]);
+			}
 			return (-1);
 		}
 		token_count++;
 		token = strtok(NULL, " \t");
 	}
 	free(input_copy);
-	tokens[token_count] = NULL;
+
+	if (token_count == MAX_ARGUMENTS && strtok(NULL, " \t") != NULL)
+	{
+		printf("Too many arguments, maximum allowed %d.\n",MAX_ARGUMENTS);
+		return (-1);
+	}
+
+	free(tokens[token_count]);
+
+	tokens[token_count ] = NULL;
 
 	return (token_count);
 }

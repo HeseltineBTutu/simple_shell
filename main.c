@@ -77,7 +77,8 @@ char  *is_command_in_path(const char *command)
 		return (NULL);
 	}
 	dir = strtok(path_copy, ":");
-	while (dir != NULL)
+
+	while (dir  != NULL)
 	{
 		full_path = malloc(strlen(dir) + strlen(command) + 2);
 		if (full_path == NULL)
@@ -92,7 +93,6 @@ char  *is_command_in_path(const char *command)
 
 		if (access(full_path, X_OK) == 0)
 		{
-			free(path_copy);
 			return (full_path);
 		}
 		free(full_path);
@@ -129,7 +129,8 @@ int main(void)
 				execute_command(tokens);
 				for (i = 0; i < token_count; i++)
 				{
-					free(tokens[0]);
+					free(tokens[i]);
+					tokens[i] = NULL;
 				}
 			}
 			free(input);
