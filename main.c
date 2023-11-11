@@ -20,6 +20,11 @@ void execute_command(char **tokens)
 
 	char *full_path;
 
+	if (strcmp(tokens[0], "exit") == 0)
+	{
+		exit_shell(tokens);
+	}
+
 	if (tokens == NULL || tokens[0] == NULL)
 	{
 		return;
@@ -39,7 +44,7 @@ void execute_command(char **tokens)
 		if (child_pid == 0)
 		{
 			execve(full_path, tokens, NULL);
-			perror("execve");
+			perror(full_path);
 			free(full_path);
 			exit(EXIT_FAILURE);
 		}
@@ -51,7 +56,7 @@ void execute_command(char **tokens)
 	}
 	else
 	{
-		printf("Command not found: %s\n", tokens[0]);
+		perror(tokens[0]);
 	}
 }
 
@@ -66,8 +71,21 @@ char  *is_command_in_path(const char *command)
 	char *dir;
 	char *full_path;
 	char *path_copy;
+	char *path;
 
-	char *path = getenv("PATH");
+	if (command[0] == '/')
+	{
+		if (access(command, X_OK) == 0)
+		{
+			return strdup(command);
+		}
+		else
+		{
+			return (NULL);
+		}
+	}
+
+	path = getenv("PATH");
 
 	path_copy = strdup(path);
 
@@ -93,6 +111,7 @@ char  *is_command_in_path(const char *command)
 
 		if (access(full_path, X_OK) == 0)
 		{
+			free(path_copy);
 			return (full_path);
 		}
 		free(full_path);
@@ -114,9 +133,12 @@ int main(void)
 	int token_count;
 	int i;
 
+	int interactive_mode = isatty(STDIN_FILENO);
+
 	while (1)
 	{
-		display_prompt();
+		if (interactive_mode)
+			display_prompt();
 
 		input = read_input(tokens);
 
@@ -134,6 +156,9 @@ int main(void)
 				}
 			}
 			free(input);
+
+			if (!interactive_mode)
+				break;
 		}
 	}
 	return (0);
