@@ -19,7 +19,6 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 	size_t i = 0;
 	char buffer[BUFFER_SIZE];
 	size_t newSize;
-	size_t j;
 
 	/* Check if *lineptr is NULL or *n is 0 */
 	if (*lineptr == NULL || *n == 0)
@@ -49,23 +48,14 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 			{
 				return (-1);
 			}
-			printf("DEBUG: Buffer content after reading characters: %.*s\n", (int)i, buffer);
 
-			/* Append buffer to the line */
-			for (j = 0; j < i; j++)
-			{
-				(*lineptr)[*n + j] = buffer[j];
-			}
+			memcpy(*lineptr + *n - BUFFER_SIZE, buffer, i);
 			*n = newSize;
 			i = 0;
 		}
 	}
 
-	/* Append remaining characters in the buffer to the line */
-	for (size_t j = 0; j < i; j++)
-	{
-		(*lineptr)[*n - BUFFER_SIZE + j] = buffer[j];
-	}
+	memcpy(*lineptr + *n - BUFFER_SIZE, buffer, i);
 	(*lineptr)[*n - BUFFER_SIZE + i] = '\0';
 
 	if (i == 0 && c == EOF)
@@ -73,6 +63,5 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 		return (-1);
 	}
 	return (*n - BUFFER_SIZE + i);
-	printf("DEBUG: Line read: %s\n", *lineptr);
 }
 

@@ -14,4 +14,8 @@ char *is_command_in_path(const char *command);
 void exit_shell(char **tokens, int status);
 extern char **environ;
 int _env(void);
+void handle_sigint(int sig);
+ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream);
+#define INITIAL_BUFFER_SIZE 64
+#define BUFFER_SIZE 1024
 #endif
