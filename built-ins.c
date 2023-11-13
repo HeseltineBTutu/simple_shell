@@ -7,7 +7,7 @@
  *
  * @tokens: The array of parsed tokens
  */
-void exit_shell(char **tokens)
+void exit_shell(char **tokens, int status)
 {
 	int i;
 
@@ -15,9 +15,8 @@ void exit_shell(char **tokens)
 	{
 		free(tokens[i]);
 	}
-	free(tokens[i]);
 
-	exit(EXIT_SUCCESS);
+	exit(status);
 }
 
 /**

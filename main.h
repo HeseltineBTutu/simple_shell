@@ -11,7 +11,7 @@ int parse_input(char **tokens);
 #define MAX_ARGUMENTS 100
 void execute_command(char **tokens);
 char *is_command_in_path(const char *command);
-void exit_shell(char **tokens);
+void exit_shell(char **tokens, int status);
 extern char **environ;
 int _env(void);
 #endif
