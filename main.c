@@ -127,8 +127,11 @@ int main(void)
 	char *tokens[MAX_ARGUMENTS + 1];
 	int token_count;
 	int i;
+	int exit_status = EXIT_SUCCESS;
 
 	int interactive_mode = isatty(STDIN_FILENO);
+	
+	signal(SIGINT, handle_sigint);
 
 	while (1)
 	{
@@ -145,8 +148,11 @@ int main(void)
 			{
 				if (strcmp(tokens[0], "exit") == 0)
 				{
-					free(input);
-					break;
+					if (token_count > 1)
+					{
+						exit_status = atoi(tokens[1]);
+					}
+					exit_shell(tokens, exit_status);
 				}
 				else if (strcmp(tokens[0], "env") == 0)
 				{
