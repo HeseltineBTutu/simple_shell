@@ -28,10 +28,21 @@ char *read_input(char *tokens[])
 			exit(EXIT_SUCCESS);
 		}
 	}
+
+	if (bytes_read == 0)
+	{
+		free(input);
+		return NULL;
+	}
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
 
-	tokens[0] = input;
+	tokens[0] = strdup(input);
+	if (tokens[0] == NULL)
+	{
+		perror("strdup");
+		exit(EXIT_FAILURE);
+	}
 
 	return (input);
 }
@@ -87,7 +98,6 @@ int parse_input(char **tokens)
 
 	if (token_count == MAX_ARGUMENTS && strtok(NULL, " \t") != NULL)
 	{
-		printf("Too many arguments, maximum allowed %d.\n",MAX_ARGUMENTS);
 		return (-1);
 	}
 
