@@ -12,4 +12,6 @@ int parse_input(char **tokens);
 void execute_command(char **tokens);
 char *is_command_in_path(const char *command);
 void exit_shell(char **tokens);
+extern char **environ;
+int _env(void);
 #endif

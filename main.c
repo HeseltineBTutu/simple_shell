@@ -20,11 +20,6 @@ void execute_command(char **tokens)
 
 	char *full_path;
 
-	if (strcmp(tokens[0], "exit") == 0)
-	{
-		exit_shell(tokens);
-	}
-
 	if (tokens == NULL || tokens[0] == NULL)
 	{
 		return;
@@ -148,6 +143,19 @@ int main(void)
 
 			if (token_count > 0)
 			{
+				if (strcmp(tokens[0], "exit") == 0)
+				{
+					free(input);
+					break;
+				}
+				else if (strcmp(tokens[0], "env") == 0)
+				{
+					if (_env() == -1)
+					{
+						return (-1);
+					}
+				}
+
 				execute_command(tokens);
 				for (i = 0; i < token_count; i++)
 				{
