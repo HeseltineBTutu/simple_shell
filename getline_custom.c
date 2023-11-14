@@ -15,53 +15,63 @@
  */
 ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 {
+	static char buffer[INITIAL_BUFFER_SIZE];
+	static size_t buf_index = 0;
+	static size_t buf_size = 0;
+
 	int c;
 	size_t i = 0;
-	char buffer[BUFFER_SIZE];
-	size_t newSize;
+	char *temp;
+	
+	if (stream == NULL || feof(stream))
+	{
+		if (i == 0)
+		{
+			return (0);
+		}
+		return (-1);
+	}
 
-	/* Check if *lineptr is NULL or *n is 0 */
 	if (*lineptr == NULL || *n == 0)
 	{
-		/* Set *n to INITIAL_BUFFER_SIZE */
 		*n = INITIAL_BUFFER_SIZE;
-		*lineptr = (char *)malloc(*n); /* Allocate memory for *lineptr using malloc */
+		*lineptr = (char *)malloc(*n * sizeof(char));
 		if (*lineptr == NULL)
 			return (-1);
 	}
 
-	while ((c = fgetc(stream)) != EOF && c != '\n')
+	while (1)
 	{
-		if (i < BUFFER_SIZE - 1)
+		if (buf_index >= buf_size || buf_size == 0)
 		{
-			/* Append characters to the buffer */
-			buffer[i++] = (char)c;
-		}
-		else
-		{
-			
-			/* Resize the line buffer if the buffer is full */
-			newSize = *n + i + 1;
-			*lineptr = realloc(*lineptr, newSize);
+			buf_size = read(fileno(stream), buffer, INITIAL_BUFFER_SIZE);
+			buf_index = 0;
 
-			if (*lineptr == NULL)
+			if (buf_size <= 0)
 			{
-				return (-1);
+				break;
 			}
+		}
+		c = buffer[buf_index++];
+	        (*lineptr)[i++] = (char)c;
+		if (i + 1 >= *n)
+		{
+			*n *= 2;
+			temp = realloc(*lineptr, *n * sizeof(char));
 
-			memcpy(*lineptr + *n - BUFFER_SIZE, buffer, i);
-			*n = newSize;
-			i = 0;
+		if (temp == NULL)
+		{
+			return (-1);
+		}
+		*lineptr = temp;
+		}
+		if (c == '\n')
+		{
+			break;
 		}
 	}
 
-	memcpy(*lineptr + *n - BUFFER_SIZE, buffer, i);
-	(*lineptr)[*n - BUFFER_SIZE + i] = '\0';
+	(*lineptr)[i] = '\0';
 
-	if (i == 0 && c == EOF)
-	{
-		return (-1);
-	}
-	return (*n - BUFFER_SIZE + i);
+	return (i);
 }
-
