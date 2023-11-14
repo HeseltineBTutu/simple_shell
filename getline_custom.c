@@ -22,15 +22,12 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 	int c;
 	size_t i = 0;
 	char *temp;
-	
-	if (stream == NULL || feof(stream))
+
+	if (lineptr == NULL ||n == NULL || stream == NULL)
 	{
-		if (i == 0)
-		{
-			return (0);
-		}
 		return (-1);
 	}
+
 
 	if (*lineptr == NULL || *n == 0)
 	{
@@ -56,20 +53,23 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream)
 	        (*lineptr)[i++] = (char)c;
 		if (i + 1 >= *n)
 		{
-			*n *= 2;
+			*n += BUFFER_INCREMENT;
 			temp = realloc(*lineptr, *n * sizeof(char));
+			if (temp == NULL)
+			{
+				free(*lineptr);
+				return (-1);
+			}
+			*lineptr = temp;
 
-		if (temp == NULL)
-		{
-			return (-1);
-		}
-		*lineptr = temp;
 		}
 		if (c == '\n')
 		{
 			break;
 		}
 	}
+	if (i == 0 || ferror(stream))
+		return (-1);
 
 	(*lineptr)[i] = '\0';
 
