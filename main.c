@@ -72,7 +72,7 @@ char  *is_command_in_path(const char *command)
 	{
 		if (access(command, X_OK) == 0)
 		{
-			return strdup(command);
+			return (strdup(command));
 		}
 		else
 		{
@@ -117,11 +117,13 @@ char  *is_command_in_path(const char *command)
 }
 
 /**
- * main - The main function
- *
- * Return: Always 0
- */
-int main(void)
+ * execute_shell_commands - Execute shell commands and control shell loop
+ * @interactive_mode: Flag indicating interactive mode
+ * Description:
+ * This function manages the core functionality of the shell,
+ * including handling user input, executing commands, and controlling the shell loop.
+*/
+void execute_shell_commands(int interactive_mode)
 {
 	char *input;
 	char *tokens[MAX_ARGUMENTS + 1];
@@ -129,21 +131,17 @@ int main(void)
 	int i;
 	int exit_status = EXIT_SUCCESS;
 
-	int interactive_mode = isatty(STDIN_FILENO);
-	
 	signal(SIGINT, handle_sigint);
 
 	while (1)
 	{
 		if (interactive_mode)
 			display_prompt();
-
 		input = read_input(tokens);
 
 		if (input != NULL)
 		{
 			token_count = parse_input(input, tokens);
-
 			if (token_count > 0)
 			{
 				if (strcmp(tokens[0], "exit") == 0)
@@ -158,10 +156,9 @@ int main(void)
 				{
 					if (_env() == -1)
 					{
-						return (-1);
+						exit(EXIT_FAILURE);
 					}
 				}
-
 				execute_command(tokens);
 				for (i = 0; i < token_count; i++)
 				{
@@ -170,10 +167,20 @@ int main(void)
 				}
 			}
 			free(input);
-
 			if (!interactive_mode)
 				break;
 		}
 	}
-	return (0);
 }
+
+/**
+ * main - The main function
+ *
+ * Return: Always 0
+ */
+int main(void)
+{
+	int interactive_mode = isatty(STDIN_FILENO);
+	execute_shell_commands(interactive_mode);
+	return (0);
+	}
