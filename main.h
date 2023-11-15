@@ -20,7 +20,6 @@ extern char **environ;
 int _env(void);
 void handle_sigint(int sig);
 ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream);
-<<<<<<< HEAD
 #define INITIAL_BUFFER_SIZE 128
 #define BUFFER_INCREMENT 128
 int handle_built_in_commands(char **tokens);

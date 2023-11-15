@@ -39,13 +39,15 @@ char *read_input(char *tokens[])
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
 
-	duplicate_input = strdup(input);
-	free(input);
+	duplicate_input = malloc(bytes_read);
 	if (duplicate_input == NULL)
 	{
-		perror("strdup");
+		perror("malloc");
 		exit(EXIT_FAILURE);
 	}
+	strcpy(duplicate_input, input);
+	free(input);
+
 	tokens[0] = duplicate_input;
 
 	return (duplicate_input);
@@ -64,20 +66,20 @@ int tokenize_input(const char *input, char **tokens)
 
 	int token_count = 0;
 
-	char *input_copy = strdup(input);
+	char *input_copy = malloc(strlen(input) + 1);
 
 	if (input_copy == NULL)
 	{
-		perror("strdup");
+		perror("malloc");
 		return (-1);
 	}
 	token = strtok(input_copy, " \t");
 	while (token != NULL && token_count < MAX_ARGUMENTS)
 	{
-		tokens[token_count] = strdup(token);
+		tokens[token_count] = malloc(strlen(token) + 1);
 		if (tokens[token_count] == NULL)
 		{
-			perror("strdup");
+			perror("malloc");
 			free(input_copy);
 			for (i = 0; i < token_count; i++)
 			{
@@ -85,6 +87,7 @@ int tokenize_input(const char *input, char **tokens)
 			}
 			return (-1);
 		}
+		strcpy(tokens[token_count], token);
 		token_count++;
 		token = strtok(NULL, " \t");
 	}

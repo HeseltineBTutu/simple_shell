@@ -68,29 +68,33 @@ char  *is_command_in_path(const char *command)
 	char *command_path;
 
 	char *path = getenv("PATH");
-	char *path_copy = strdup(path);
+	char *path_copy = malloc(strlen(path) + 1);
+	if (path_copy == NULL)
+	{
+		perror("malloc");
+		return (NULL);
+	}
+	strcpy(path_copy, path);
 
 	if (command[0] == '/')
 	{
 		if (access(command, X_OK) == 0)
 		{
-			command_path = strdup(command);
+			command_path = malloc(strlen(command) + 1);
 			if (command_path == NULL)
 			{
-				perror("strdup");
+				perror("malloc");
+				free(path_copy);
 				return (NULL);
 			}
+			strcpy(command_path, command);
 			return (command_path);
 		}
-		else{
+		else
+		{
+			free(path_copy);
 			return (NULL);
 		}
-	}
-
-	if (path_copy == NULL)
-	{
-		perror("strdup");
-		return (NULL);
 	}
 
 	dir = strtok(path_copy, ":");

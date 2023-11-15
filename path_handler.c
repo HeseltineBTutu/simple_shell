@@ -36,19 +36,27 @@ char *construct_full_path(const char *dir, const char *command)
 char *check_command_in_path(const char *full_path)
 {
     char *found_command;
+    size_t len;
+    size_t i;
 
     if (full_path == NULL)
     {
         return (NULL);
     }
-	if (access(full_path, X_OK) == 0)
-	{
-        found_command = strdup(full_path);
-        if (found_command == NULL)
-        {
-            perror("strdup");
-        }
-        return (found_command);
-	}
-	return (NULL);
+    if (access(full_path, X_OK) == 0)
+    {
+	    len = strlen(full_path) + 1;
+	    found_command = malloc(len);
+	    if (found_command == NULL)
+	    {
+		    perror("malloc");
+		    return (NULL);
+	    }
+	    for (i = 0; i < len; i++)
+	    {
+		    found_command[i] = full_path[i];
+	    }
+	    return (found_command);
+    }
+    return (NULL);
 }
