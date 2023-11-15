@@ -70,6 +70,22 @@ char  *is_command_in_path(const char *command)
 	char *path = getenv("PATH");
 	char *path_copy = strdup(path);
 
+	if (command[0] == '/')
+	{
+		if (access(command, X_OK) == 0)
+		{
+			command_path = strdup(command);
+			if (command_path == NULL)
+			{
+				perror("strdup");
+			}
+			return (command_path);
+		}
+		else{
+			return (NULL);
+		}
+	}
+
 	if (path_copy == NULL)
 	{
 		perror("strdup");
