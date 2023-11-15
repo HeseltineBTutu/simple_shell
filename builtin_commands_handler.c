@@ -15,6 +15,7 @@ void exit_shell(char **tokens, int status)
 	{
 		free(tokens[i]);
 	}
+	free(tokens[i]);
 
 	exit(status);
 }

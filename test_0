@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Enable debugging output
+set -x
+
+# Shell script test suite for the custom shell program
+
+# Functions
+run_test() {
+    test_name="$1"
+    expected_output="$2"
+    shift 2
+
+    # Quote arguments to preserve spaces
+    actual_output=$(./hsh "$@")
+
+    if [ "$actual_output" == "$expected_output" ]; then
+        echo -e "\e[32mTest Passed\e[0m: $test_name"
+        ((tests_passed++))
+    else
+        echo -e "\e[31mTest Failed\e[0m: $test_name"
+        ((tests_failed++))
+        echo -e "\e[31mExpected:\e[0m $expected_output"
+        echo -e "\e[31mActual  :\e[0m $actual_output"
+    fi
+}
+
+# Initialize variables
+tests_passed=0
+tests_failed=0
+
+# Define test cases
+test_cases=(
+    ["Basic command execution" "" "echo" "Hello, world!"]
+    ["Command not found" "Command not found: non_existent_command" "non_existent_command"]
+    ["Input with spaces" "" "echo" "Command with spaces"]
+    ["Exit the shell" "" "exit"]
+    ["Edge case - empty input" "" ""]
+    ["Edge case - empty command" "Command not found: " ""]
+)
+
+# Run Tests
+for test_case in "${test_cases[@]}"; do
+    run_test "${test_case[@]}"
+done
+
+
+# Display test results
+echo -e "\n==== Test Results ===="
+echo -e "Total tests: $((tests_passed + tests_failed))"
+echo -e "Tests passed: \e[32m$tests_passed\e[0m"
+echo -e "Tests failed: \e[31m$tests_failed\e[0m"
+
+# Exit with an appropriate status code
+if [ "$tests_failed" -eq 0 ]; then
+    exit 0
+else
+    exit 1
+fi
+

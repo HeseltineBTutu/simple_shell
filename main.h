@@ -16,6 +16,8 @@ extern char **environ;
 int _env(void);
 void handle_sigint(int sig);
 ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream);
-#define INITIAL_BUFFER_SIZE 64
-#define BUFFER_SIZE 1024
+#define INITIAL_BUFFER_SIZE 128
+#define BUFFER_INCREMENT 128
+int handle_built_in_commands(char **tokens);
+void cleanup_tokens(char **tokens, int token_count);
 #endif
