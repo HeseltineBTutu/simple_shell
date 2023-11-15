@@ -51,16 +51,17 @@ char *read_input(char *tokens[])
  * tokenize_input - Tokenize the input into an array of tokens
  * @input: The input to be tokenized
  * @tokens: The array to store the parsed tokens
- * 
  * Return: The number of tokens parsed, or -1 on error
  */
- int tokenize_input(const char *input, char **tokens)
- {
+int tokenize_input(const char *input, char **tokens)
+{
 	char *token;
-	int token_count = 0;
 	int i;
 
+	int token_count = 0;
+
 	char *input_copy = strdup(input);
+
 	if (input_copy == NULL)
 	{
 		perror("strdup");
@@ -84,9 +85,10 @@ char *read_input(char *tokens[])
 		token = strtok(NULL, " \t");
 	}
 	tokens[token_count] = NULL;
+
 	free(input_copy);
 	return (token_count);
- }
+}
 
 /**
  * parse_input - Parse the input into tokens
