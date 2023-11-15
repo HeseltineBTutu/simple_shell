@@ -32,7 +32,7 @@ char *read_input(char *tokens[])
 	if (bytes_read == 0)
 	{
 		free(input);
-		return NULL;
+		return (NULL);
 	}
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
@@ -48,35 +48,25 @@ char *read_input(char *tokens[])
 }
 
 /**
- * parse_input - Parse the input into tokens
- *
- * @input: The input to be parsed
+ * tokenize_input - Tokenize the input into an array of tokens
+ * @input: The input to be tokenized
  * @tokens: The array to store the parsed tokens
- *
- * Return: The number of tokens parsed
+ * 
+ * Return: The number of tokens parsed, or -1 on error
  */
-int parse_input(char **tokens)
-{
+ int tokenize_input(const char *input, char **tokens)
+ {
 	char *token;
 	int token_count = 0;
-	char *input_copy;
 	int i;
 
-
-	if (tokens == NULL || tokens[0] == NULL || tokens[0][0] == '\0')
-	{
-		return (0);
-	}
-
-	input_copy = strdup(tokens[0]);
+	char *input_copy = strdup(input);
 	if (input_copy == NULL)
 	{
 		perror("strdup");
 		return (-1);
 	}
-
 	token = strtok(input_copy, " \t");
-
 	while (token != NULL && token_count < MAX_ARGUMENTS)
 	{
 		tokens[token_count] = strdup(token);
@@ -84,7 +74,6 @@ int parse_input(char **tokens)
 		{
 			perror("strdup");
 			free(input_copy);
-
 			for (i = 0; i < token_count; i++)
 			{
 				free(tokens[i]);
@@ -94,14 +83,35 @@ int parse_input(char **tokens)
 		token_count++;
 		token = strtok(NULL, " \t");
 	}
+	tokens[token_count] = NULL;
 	free(input_copy);
+	return (token_count);
+ }
 
+/**
+ * parse_input - Parse the input into tokens
+ *
+ * @input: The input to be parsed
+ * @tokens: The array to store the parsed tokens
+ *
+ * Return: The number of tokens parsed
+ */
+int parse_input(const char *input, char **tokens)
+{
+	int token_count;
+
+	if (tokens == NULL || tokens[0] == NULL || tokens[0][0] == '\0')
+	{
+		return (0);
+	}
+	token_count = tokenize_input(input, tokens);
+	if (token_count == -1)
+	{
+		return (-1);
+	}
 	if (token_count == MAX_ARGUMENTS && strtok(NULL, " \t") != NULL)
 	{
 		return (-1);
 	}
-
-	tokens[token_count ] = NULL;
-
 	return (token_count);
 }

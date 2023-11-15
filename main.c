@@ -142,7 +142,7 @@ int main(void)
 
 		if (input != NULL)
 		{
-			token_count = parse_input(tokens);
+			token_count = parse_input(input, tokens);
 
 			if (token_count > 0)
 			{
