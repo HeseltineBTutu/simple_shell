@@ -10,6 +10,7 @@ char *read_input(char *tokens[])
 	char *input = NULL;
 	size_t input_size = 0;
 	ssize_t bytes_read;
+	char *duplicate_input;
 
 
 	bytes_read = getline(&input, &input_size, stdin);
@@ -25,6 +26,7 @@ char *read_input(char *tokens[])
 		if (feof(stdin))
 		{
 			printf("\n");
+			free(input);
 			exit(EXIT_SUCCESS);
 		}
 	}
@@ -32,19 +34,64 @@ char *read_input(char *tokens[])
 	if (bytes_read == 0)
 	{
 		free(input);
-		return NULL;
+		return (NULL);
 	}
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
 
-	tokens[0] = strdup(input);
-	if (tokens[0] == NULL)
+	duplicate_input = strdup(input);
+	free(input);
+	if (duplicate_input == NULL)
 	{
 		perror("strdup");
 		exit(EXIT_FAILURE);
 	}
+	tokens[0] = duplicate_input;
 
-	return (input);
+	return (duplicate_input);
+}
+
+/**
+ * tokenize_input - Tokenize the input into an array of tokens
+ * @input: The input to be tokenized
+ * @tokens: The array to store the parsed tokens
+ * Return: The number of tokens parsed, or -1 on error
+ */
+int tokenize_input(const char *input, char **tokens)
+{
+	char *token;
+	int i;
+
+	int token_count = 0;
+
+	char *input_copy = strdup(input);
+
+	if (input_copy == NULL)
+	{
+		perror("strdup");
+		return (-1);
+	}
+	token = strtok(input_copy, " \t");
+	while (token != NULL && token_count < MAX_ARGUMENTS)
+	{
+		tokens[token_count] = strdup(token);
+		if (tokens[token_count] == NULL)
+		{
+			perror("strdup");
+			free(input_copy);
+			for (i = 0; i < token_count; i++)
+			{
+				free(tokens[i]);
+			}
+			return (-1);
+		}
+		token_count++;
+		token = strtok(NULL, " \t");
+	}
+	tokens[token_count] = NULL;
+
+	free(input_copy);
+	return (token_count);
 }
 
 /**
@@ -55,53 +102,22 @@ char *read_input(char *tokens[])
  *
  * Return: The number of tokens parsed
  */
-int parse_input(char **tokens)
+int parse_input(const char *input, char **tokens)
 {
-	char *token;
-	int token_count = 0;
-	char *input_copy;
-	int i;
-
+	int token_count;
 
 	if (tokens == NULL || tokens[0] == NULL || tokens[0][0] == '\0')
 	{
 		return (0);
 	}
-
-	input_copy = strdup(tokens[0]);
-	if (input_copy == NULL)
+	token_count = tokenize_input(input, tokens);
+	if (token_count == -1)
 	{
-		perror("strdup");
 		return (-1);
 	}
-
-	token = strtok(input_copy, " \t");
-
-	while (token != NULL && token_count < MAX_ARGUMENTS)
-	{
-		tokens[token_count] = strdup(token);
-		if (tokens[token_count] == NULL)
-		{
-			perror("strdup");
-			free(input_copy);
-
-			for (i = 0; i < token_count; i++)
-			{
-				free(tokens[i]);
-			}
-			return (-1);
-		}
-		token_count++;
-		token = strtok(NULL, " \t");
-	}
-	free(input_copy);
-
 	if (token_count == MAX_ARGUMENTS && strtok(NULL, " \t") != NULL)
 	{
 		return (-1);
 	}
-
-	tokens[token_count ] = NULL;
-
 	return (token_count);
 }

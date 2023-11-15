@@ -65,85 +65,82 @@ char  *is_command_in_path(const char *command)
 {
 	char *dir;
 	char *full_path;
-	char *path_copy;
-	char *path;
+	char *command_path;
+
+	char *path = getenv("PATH");
+	char *path_copy = strdup(path);
 
 	if (command[0] == '/')
 	{
 		if (access(command, X_OK) == 0)
 		{
-			return strdup(command);
+			command_path = strdup(command);
+			if (command_path == NULL)
+			{
+				perror("strdup");
+				return (NULL);
+			}
+			return (command_path);
 		}
-		else
-		{
+		else{
 			return (NULL);
 		}
 	}
-
-	path = getenv("PATH");
-
-	path_copy = strdup(path);
 
 	if (path_copy == NULL)
 	{
 		perror("strdup");
 		return (NULL);
 	}
-	dir = strtok(path_copy, ":");
 
-	while (dir  != NULL)
+	dir = strtok(path_copy, ":");
+	while (dir != NULL)
 	{
-		full_path = malloc(strlen(dir) + strlen(command) + 2);
+		full_path = construct_full_path(dir, command);
 		if (full_path == NULL)
 		{
-			perror("malloc");
 			free(path_copy);
 			return (NULL);
 		}
-		strcpy(full_path, dir);
-		strcat(full_path, "/");
-		strcat(full_path, command);
-
-		if (access(full_path, X_OK) == 0)
+		command_path = check_command_in_path(full_path);
+		free(full_path);
+		if (command_path != NULL)
 		{
 			free(path_copy);
-			return (full_path);
+			return (command_path);
 		}
-		free(full_path);
 		dir = strtok(NULL, ":");
 	}
 	free(path_copy);
 	return (NULL);
+
 }
 
 /**
- * main - The main function
- *
- * Return: Always 0
- */
-int main(void)
+ * execute_shell_commands - Execute shell commands and control shell loop
+ * @interactive_mode: Flag indicating interactive mode
+ * Description:
+ * This function manages the core functionality of the shell,
+ * including handling user input, executing commands,
+ * and controlling the shell loop.
+*/
+void execute_shell_commands(int interactive_mode)
 {
 	char *input;
 	char *tokens[MAX_ARGUMENTS + 1];
 	int token_count;
-	int i;
 	int exit_status = EXIT_SUCCESS;
 
-	int interactive_mode = isatty(STDIN_FILENO);
-	
 	signal(SIGINT, handle_sigint);
-
 	while (1)
 	{
 		if (interactive_mode)
 			display_prompt();
-
 		input = read_input(tokens);
 
 		if (input != NULL)
 		{
-			token_count = parse_input(tokens);
-
+			token_count = parse_input(input, tokens);
 			if (token_count > 0)
 			{
 				if (strcmp(tokens[0], "exit") == 0)
@@ -158,22 +155,29 @@ int main(void)
 				{
 					if (_env() == -1)
 					{
-						return (-1);
+						exit(EXIT_FAILURE);
 					}
 				}
-
 				execute_command(tokens);
-				for (i = 0; i < token_count; i++)
-				{
-					free(tokens[i]);
-					tokens[i] = NULL;
-				}
+				free_tokens(tokens, token_count);
 			}
 			free(input);
-
 			if (!interactive_mode)
 				break;
 		}
 	}
-	return (0);
 }
+
+/**
+ * main - The main function
+ *
+ * Return: Always 0
+ */
+int main(void)
+{
+	int interactive_mode;
+
+	interactive_mode = isatty(STDIN_FILENO);
+	execute_shell_commands(interactive_mode);
+	return (0);
+	}
