@@ -32,9 +32,21 @@ char *construct_full_path(const char *dir, const char *command)
 */
 char *check_command_in_path(const char *full_path)
 {
+	char *found_command;
+
+	if (full_path == NULL)
+	{
+		return (NULL);
+	}
 	if (access(full_path, X_OK) == 0)
 	{
-		return (strdup(full_path));
+		found_command = strdup(full_path);
+
+		if (found_command == NULL)
+		{
+			perror("strdup");
+		}
+		return (found_command);
 	}
 	return (NULL);
 }
