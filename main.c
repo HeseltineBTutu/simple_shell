@@ -126,7 +126,8 @@ int main(void)
 	char *input;
 	char *tokens[MAX_ARGUMENTS + 1];
 	int token_count;
-	int built_in_command;
+	int i;
+	int exit_status = EXIT_SUCCESS;
 
 	int interactive_mode = isatty(STDIN_FILENO);
 	
@@ -145,25 +146,33 @@ int main(void)
 
 			if (token_count > 0)
 			{
-				built_in_command = handle_built_in_commands(tokens);
-
-				if (built_in_command != 1)
+				if (strcmp(tokens[0], "exit") == 0)
 				{
-					if (built_in_command == -1)
+					if (token_count > 1)
+					{
+						exit_status = atoi(tokens[1]);
+					}
+					exit_shell(tokens, exit_status);
+				}
+				else if (strcmp(tokens[0], "env") == 0)
+				{
+					if (_env() == -1)
 					{
 						return (-1);
 					}
+				}
 
-					execute_command(tokens);
-					cleanup_tokens(tokens, token_count);
+				execute_command(tokens);
+				for (i = 0; i < token_count; i++)
+				{
+					free(tokens[i]);
+					tokens[i] = NULL;
 				}
 			}
 			free(input);
 
 			if (!interactive_mode)
-			{
 				break;
-			}
 		}
 	}
 	return (0);
