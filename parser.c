@@ -10,6 +10,7 @@ char *read_input(char *tokens[])
 	char *input = NULL;
 	size_t input_size = 0;
 	ssize_t bytes_read;
+	char *duplicate_input;
 
 
 	bytes_read = getline(&input, &input_size, stdin);
@@ -25,6 +26,7 @@ char *read_input(char *tokens[])
 		if (feof(stdin))
 		{
 			printf("\n");
+			free(input);
 			exit(EXIT_SUCCESS);
 		}
 	}
@@ -37,14 +39,16 @@ char *read_input(char *tokens[])
 	if (bytes_read > 0 && input[bytes_read - 1] == '\n')
 		input[bytes_read - 1] = '\0';
 
-	tokens[0] = strdup(input);
-	if (tokens[0] == NULL)
+	duplicate_input = strdup(input);
+	free(input);
+	if (duplicate_input == NULL)
 	{
 		perror("strdup");
 		exit(EXIT_FAILURE);
 	}
+	tokens[0] = duplicate_input;
 
-	return (input);
+	return (duplicate_input);
 }
 
 /**

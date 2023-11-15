@@ -78,6 +78,7 @@ char  *is_command_in_path(const char *command)
 			if (command_path == NULL)
 			{
 				perror("strdup");
+				return (NULL);
 			}
 			return (command_path);
 		}
