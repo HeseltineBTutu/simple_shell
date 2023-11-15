@@ -63,17 +63,22 @@ int tokenize_input(const char *input, char **tokens)
 {
 	char *token;
 	int i;
+	char *delimiter;
+	char *input_copy;
 
 	int token_count = 0;
 
-	char *input_copy = malloc(strlen(input) + 1);
+	input_copy = malloc(strlen(input) + 1);
 
 	if (input_copy == NULL)
 	{
 		perror("malloc");
 		return (-1);
 	}
-	token = strtok(input_copy, " \t");
+	strcpy(input_copy, input);
+	delimiter = " \t";
+	token = strtok(input_copy, delimiter);
+
 	while (token != NULL && token_count < MAX_ARGUMENTS)
 	{
 		tokens[token_count] = malloc(strlen(token) + 1);
@@ -89,7 +94,7 @@ int tokenize_input(const char *input, char **tokens)
 		}
 		strcpy(tokens[token_count], token);
 		token_count++;
-		token = strtok(NULL, " \t");
+		token = strtok(NULL, delimiter);
 	}
 	tokens[token_count] = NULL;
 
