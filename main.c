@@ -190,6 +190,13 @@ void execute_shell_commands(int interactive_mode)
 						perror("Usage: unsetenv VARIABLE\n");
 					}
 				}
+				else if (strcmp(tokens[0], "cd") == 0)
+				{
+					if (builtin_cd(tokens) != 0)
+					{
+						perror("cd");
+					}
+				}
 				execute_command(tokens);
 				free_tokens(tokens, token_count);
 			}
