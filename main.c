@@ -162,6 +162,34 @@ void execute_shell_commands(int interactive_mode)
 						exit(EXIT_FAILURE);
 					}
 				}
+				else if (strcmp(tokens[0], "setenv") == 0)
+				{
+					if (token_count == 3)
+					{
+						if (set_env_variable(tokens[1], tokens[2]) != 0)
+						{
+							perror("setenv: Failed to set environment variable");
+						}
+					}
+					else
+					{
+						perror("Usage: setenv VARIABLE VALUE\n");
+					}
+				}
+				else if (strcmp(tokens[0], "unsetenv") == 0)
+				{
+					if (token_count == 2)
+					{
+						if (unset_env_variable(tokens[1]) != 0)
+						{
+							perror("unsetenv: Failed to unset environment variable");
+						}
+					}
+					else
+					{
+						perror("Usage: unsetenv VARIABLE\n");
+					}
+				}
 				execute_command(tokens);
 				free_tokens(tokens, token_count);
 			}

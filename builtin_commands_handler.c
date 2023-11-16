@@ -11,12 +11,24 @@ void exit_shell(char **tokens, int status)
 {
 	int i;
 
-	for (i = 0; tokens[i] != NULL; i++)
+	if (tokens != NULL)
 	{
-		free(tokens[i]);
+		for (i = 0; tokens[i] != NULL; i++)
+		{
+			free(tokens[i]);
+		}
 	}
-	free(tokens[i]);
-
+	if (status == -1)
+	{
+		if (errno == ENOENT || errno == EACCES)
+		{
+			status = EXIT_FAILURE;
+		}
+		else
+		{
+			status = EXIT_SUCCESS;
+		}
+	}
 	exit(status);
 }
 

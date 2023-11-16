@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <errno.h>
 void display_prompt(void);
 void execute_shell_commands(int interactive_mode);
 char *read_input(char *tokens[]);
@@ -25,6 +26,6 @@ ssize_t getline_custom(char **lineptr, size_t *n, FILE *stream);
 int handle_built_in_commands(char **tokens);
 void cleanup_tokens(char **tokens, int token_count);
 void free_tokens(char **tokens, int token_count);
-#define INITIAL_BUFFER_SIZE 128
-#define BUFFER_INCREMENT 128
+int set_env_variable(const char *variable, const char *value);
+int unset_env_variable(const char *variable);
 #endif
